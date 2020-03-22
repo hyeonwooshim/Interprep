@@ -1,16 +1,28 @@
 # interprep
 
-A new Flutter project.
+Interprep is a web application that allows users to copy and paste Bible verses with a specific format fit for JBCH Wednesday sermons. This application copies bible verses in English (New King James Version) and Korean (개역한글) to aid translators/interpreters who are translating a prerecorded Korean sermon to accurately convey the verses recited or read by the pastor.
 
-## Getting Started
+## Format of Recited Verses
+(depending on whether the pastor mentions the location of the verse before reciting or after)
 
-This project is a starting point for a Flutter application.
+        (책이름 장#:절#-절#) 구절
+		(BookName Ch#:Vs#-Vs#) Verse Content
 
-A few resources to get you started if this is your first Flutter project:
+Or
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+        구절 (책이름 장#:절#-절#)
+		Verse Content (BookName Ch#:Vs#-Vs#)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Format of Read Verses (Verses found and read together)
+
+        "책이름 장#:절#-절#"	"BookName Ch#:Vs#-Vs#"
+		+---------------------------------------+
+		|					|					|
+        |      구절          |   Verse Content   |
+		|					|					|
+		+---------------------------------------+
+
+
+## To Use
+
+Work in Progress!
