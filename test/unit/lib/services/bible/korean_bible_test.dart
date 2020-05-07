@@ -3,6 +3,29 @@ import 'package:interprep/services/bible/korean_bible.dart';
 import 'package:interprep/services/bible/verse.dart';
 
 void main() {
+  test('language is Korean', () {
+    expect(KoreanBible().language, 'Korean');
+  });
+
+  group('getBookIndex(String book)', () {
+    test('returns -1 if book is empty', () {
+      expect(KoreanBible().getBookIndex(''), -1);
+    });
+
+    test('searches shortened names first', () {
+      // Without that search, this will result in getting 요나 instead 요한복음
+      expect(KoreanBible().getBookIndex('요'), 42);
+    });
+
+    test('returns first index that contains string', () {
+      expect(KoreanBible().getBookIndex('굽'), 1);
+    });
+
+    test('works with full book name', () {
+      expect(KoreanBible().getBookIndex('사무엘상'), 8);
+    });
+  });
+
   group('defaultParseLine()', () {
     test('successfully parses usual line', () {
       final line = '창1:1 태초에 하나님이 천지를 창조하시니라';

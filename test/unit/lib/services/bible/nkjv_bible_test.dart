@@ -3,6 +3,29 @@ import 'package:interprep/services/bible/nkjv_bible.dart';
 import 'package:interprep/services/bible/verse.dart';
 
 void main() {
+  test('language is English', () {
+    expect(NkjvBible().language, 'English');
+  });
+
+  group('getBookIndex(String book)', () {
+    test('returns -1 if book is empty', () {
+      expect(NkjvBible().getBookIndex(''), -1);
+    });
+
+    test('searches shortened names first', () {
+      // Without that search, this will result in getting Genesis instead of Isaiah
+      expect(NkjvBible().getBookIndex('is'), 22);
+    });
+
+    test('returns first index that contains string', () {
+      expect(NkjvBible().getBookIndex('odu'), 1);
+    });
+
+    test('works with full book name', () {
+      expect(NkjvBible().getBookIndex('1 Samuel'), 8);
+    });
+  });
+
   group('defaultParseLine()', () {
     test('successfully parses usual line', () {
       final line =
