@@ -3,7 +3,7 @@ import 'package:interprep/services/bible/verse.dart';
 
 void main() {
   group('Constructor', () {
-    test('value should start at 0', () {
+    test('initializes with proper values', () {
       final verse = Verse('창세기', 1, 1, 1, '태초에 하나님이 천지를 창조하시니라');
       expect(verse.bookName, '창세기');
       expect(verse.book, 1);
