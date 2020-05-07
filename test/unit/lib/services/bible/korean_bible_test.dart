@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:interprep/services/bible/bible.dart';
 import 'package:interprep/services/bible/korean_bible.dart';
-import 'package:interprep/services/bible/nkjv_bible.dart';
 import 'package:interprep/services/bible/verse.dart';
 
 void main() {
