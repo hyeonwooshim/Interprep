@@ -1,8 +1,81 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:interprep/services/bible/bible.dart';
 import 'package:interprep/services/bible/nkjv_bible.dart';
 import 'package:interprep/services/bible/verse.dart';
 
 void main() {
+  group('Constructor fromLines', () {
+    test('produces correctly indexed Bible', () {
+      final lines = File('assets/NKJVer.txt').readAsLinesSync();
+      final bible = NkjvBible.fromLines(lines);
+
+      expect(bible.indexedBible.length, Bible.numBooks);
+      expect(
+          bible.indexedBible
+              .map((b) => b.map((c) => c.length).reduce((j, k) => j + k))
+              .reduce((j, k) => j + k),
+          Bible.numVerses);
+      expect(bible.indexedBible.map((b) => b.length), Bible.bookToNumChapters);
+
+      bible.indexedBible.asMap().forEach((i, b) {
+        b.asMap().forEach((j, c) {
+          c.asMap().forEach((k, v) {
+            expect(v.book, i);
+            expect(v.chapter, j + 1);
+            expect(v.verse, k + 1);
+          });
+        });
+      });
+    });
+  });
+
+  test('language is English', () {
+    expect(NkjvBible().language, 'English');
+  });
+
+  group('hasChapter()', () {
+    test('returns false if book is negative', () {
+      expect(NkjvBible().hasChapter(-1, 0), false);
+    });
+
+    test('returns false if book is out of range', () {
+      expect(NkjvBible().hasChapter(66, 0), false);
+    });
+
+    test('returns false if chapter is nonpositive', () {
+      expect(NkjvBible().hasChapter(0, 0), false);
+    });
+
+    test('returns false if chapter is out of range', () {
+      expect(NkjvBible().hasChapter(0, 51), false);
+    });
+
+    test('returns true if book and chapter are in range', () {
+      expect(NkjvBible().hasChapter(0, 50), true);
+    });
+  });
+
+  group('getBookIndex(String book)', () {
+    test('returns -1 if book is empty', () {
+      expect(NkjvBible().getBookIndex(''), -1);
+    });
+
+    test('searches shortened names first', () {
+      // Without that search, this will result in getting Genesis instead of Isaiah
+      expect(NkjvBible().getBookIndex('is'), 22);
+    });
+
+    test('returns first index that contains string', () {
+      expect(NkjvBible().getBookIndex('odu'), 1);
+    });
+
+    test('works with full book name', () {
+      expect(NkjvBible().getBookIndex('1 Samuel'), 8);
+    });
+  });
+
   group('defaultParseLine()', () {
     test('successfully parses usual line', () {
       final line =

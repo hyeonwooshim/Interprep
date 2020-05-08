@@ -1,8 +1,81 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:interprep/services/bible/bible.dart';
 import 'package:interprep/services/bible/korean_bible.dart';
 import 'package:interprep/services/bible/verse.dart';
 
 void main() {
+  group('Constructor fromLines', () {
+    test('produces correctly indexed Bible', () {
+      final lines = File('assets/KoreanVer.txt').readAsLinesSync();
+      final bible = KoreanBible.fromLines(lines);
+
+      expect(bible.indexedBible.length, Bible.numBooks);
+      expect(
+          bible.indexedBible
+              .map((b) => b.map((c) => c.length).reduce((j, k) => j + k))
+              .reduce((j, k) => j + k),
+          Bible.numVerses);
+      expect(bible.indexedBible.map((b) => b.length), Bible.bookToNumChapters);
+
+      bible.indexedBible.asMap().forEach((i, b) {
+        b.asMap().forEach((j, c) {
+          c.asMap().forEach((k, v) {
+            expect(v.book, i);
+            expect(v.chapter, j + 1);
+            expect(v.verse, k + 1);
+          });
+        });
+      });
+    });
+  });
+
+  test('language is Korean', () {
+    expect(KoreanBible().language, 'Korean');
+  });
+
+  group('hasChapter()', () {
+    test('returns false if book is negative', () {
+      expect(KoreanBible().hasChapter(-1, 0), false);
+    });
+
+    test('returns false if book is out of range', () {
+      expect(KoreanBible().hasChapter(66, 0), false);
+    });
+
+    test('returns false if chapter is nonpositive', () {
+      expect(KoreanBible().hasChapter(0, 0), false);
+    });
+
+    test('returns false if chapter is out of range', () {
+      expect(KoreanBible().hasChapter(0, 51), false);
+    });
+
+    test('returns true if book and chapter are in range', () {
+      expect(KoreanBible().hasChapter(0, 50), true);
+    });
+  });
+
+  group('getBookIndex()', () {
+    test('returns -1 if book is empty', () {
+      expect(KoreanBible().getBookIndex(''), -1);
+    });
+
+    test('searches shortened names first', () {
+      // Without that search, this will result in getting 요나 instead 요한복음
+      expect(KoreanBible().getBookIndex('요'), 42);
+    });
+
+    test('returns first index that contains string', () {
+      expect(KoreanBible().getBookIndex('굽'), 1);
+    });
+
+    test('works with full book name', () {
+      expect(KoreanBible().getBookIndex('사무엘상'), 8);
+    });
+  });
+
   group('defaultParseLine()', () {
     test('successfully parses usual line', () {
       final line = '창1:1 태초에 하나님이 천지를 창조하시니라';
