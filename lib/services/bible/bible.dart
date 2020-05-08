@@ -6,7 +6,7 @@ abstract class Bible {
   Bible();
 
   Bible.fromLines(dynamic lines, [Verse parseLine(String line)]) {
-    indexedBible = _indexAllLines(lines, parseLine);
+    indexedBible = _indexAllLines(lines, parseLine ?? defaultParseLine);
   }
 
   String get language;
@@ -67,7 +67,7 @@ abstract class Bible {
 
   List<List<List<Verse>>> _indexAllLines(
       dynamic lines, Verse parseLine(String line)) {
-    final book = List<List>(numBooks);
+    final book = List<List<List<Verse>>>(numBooks);
     for (int i = 0; i < numBooks; i++) {
       // Assign correct number of chapters
       final chapterCount = bookToNumChapters[i];
@@ -76,7 +76,7 @@ abstract class Bible {
 
     lines.forEach((line) {
       Verse v = parseLine(line);
-      book[v.book][v.chapter - 1][v.verse - 1] = v.text;
+      book[v.book][v.chapter - 1].add(v);
     });
 
     return book;
@@ -112,6 +112,7 @@ abstract class Bible {
   }
 
   static const int numBooks = 66;
+  static const int numVerses = 31102;
   static const bookToNumChapters = [
     50,
     40,

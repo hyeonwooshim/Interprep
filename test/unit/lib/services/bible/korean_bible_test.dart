@@ -1,13 +1,63 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:interprep/services/bible/bible.dart';
 import 'package:interprep/services/bible/korean_bible.dart';
 import 'package:interprep/services/bible/verse.dart';
 
 void main() {
+  group('Constructor fromLines', () {
+    test('produces correctly indexed Bible', () {
+      final lines = File('assets/KoreanVer.txt').readAsLinesSync();
+      final bible = KoreanBible.fromLines(lines);
+
+      expect(bible.indexedBible.length, Bible.numBooks);
+      expect(
+          bible.indexedBible
+              .map((b) => b.map((c) => c.length).reduce((j, k) => j + k))
+              .reduce((j, k) => j + k),
+          Bible.numVerses);
+      expect(bible.indexedBible.map((b) => b.length), Bible.bookToNumChapters);
+
+      bible.indexedBible.asMap().forEach((i, b) {
+        b.asMap().forEach((j, c) {
+          c.asMap().forEach((k, v) {
+            expect(v.book, i);
+            expect(v.chapter, j + 1);
+            expect(v.verse, k + 1);
+          });
+        });
+      });
+    });
+  });
+
   test('language is Korean', () {
     expect(KoreanBible().language, 'Korean');
   });
 
-  group('getBookIndex(String book)', () {
+  group('hasChapter()', () {
+    test('returns false if book is negative', () {
+      expect(KoreanBible().hasChapter(-1, 0), false);
+    });
+
+    test('returns false if book is out of range', () {
+      expect(KoreanBible().hasChapter(66, 0), false);
+    });
+
+    test('returns false if chapter is nonpositive', () {
+      expect(KoreanBible().hasChapter(0, 0), false);
+    });
+
+    test('returns false if chapter is out of range', () {
+      expect(KoreanBible().hasChapter(0, 51), false);
+    });
+
+    test('returns true if book and chapter are in range', () {
+      expect(KoreanBible().hasChapter(0, 50), true);
+    });
+  });
+
+  group('getBookIndex()', () {
     test('returns -1 if book is empty', () {
       expect(KoreanBible().getBookIndex(''), -1);
     });
