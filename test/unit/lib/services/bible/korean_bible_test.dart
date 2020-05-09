@@ -57,6 +57,79 @@ void main() {
     });
   });
 
+  group('versesInRange()', () {
+    KoreanBible bible;
+
+    setUpAll(() {
+      final lines = File('assets/KoreanVer.txt').readAsLinesSync();
+      bible = KoreanBible.fromLines(lines);
+    });
+
+    test('returns list of verses in same chapter', () {
+      final list = bible.versesInRange(0, 1, 1, 1, 3);
+      final expectedList = [
+        Verse('창세기', 0, 1, 1, '태초에 하나님이 천지를 창조하시니라'),
+        Verse('창세기', 0, 1, 2, '땅이 혼돈하고 공허하며 흑암이 깊음 위에 있고 하나님의 신은 수면에 운행하시니라'),
+        Verse('창세기', 0, 1, 3, '하나님이 가라사대 빛이 있으라 하시매 빛이 있었고')
+      ];
+      expect(list, expectedList);
+    });
+
+    test('returns list of verses in different chapters', () {
+      final list = bible.versesInRange(0, 1, 31, 2, 2);
+      final expectedList = [
+        Verse('창세기', 0, 1, 31,
+            '하나님이 그 지으신 모든 것을 보시니 보시기에 심히 좋았더라 저녁이 되며 아침이 되니 이는 여섯째 날이니라'),
+        Verse('창세기', 0, 2, 1, '천지와 만물이 다 이루니라'),
+        Verse('창세기', 0, 2, 2,
+            '하나님의 지으시던 일이 일곱째 날이 이를 때에 마치니 그 지으시던 일이 다하므로 일곱째 날에 안식하시니라')
+      ];
+      expect(list, expectedList);
+    });
+  });
+
+  group('versesFrom()', () {
+    KoreanBible bible;
+
+    setUpAll(() {
+      final lines = File('assets/KoreanVer.txt').readAsLinesSync();
+      bible = KoreanBible.fromLines(lines);
+    });
+
+    test('returns list of verses in same chapter', () {
+      final list = bible.versesFrom(0, 1, 1, 3);
+      final expectedList = [
+        Verse('창세기', 0, 1, 1, '태초에 하나님이 천지를 창조하시니라'),
+        Verse('창세기', 0, 1, 2, '땅이 혼돈하고 공허하며 흑암이 깊음 위에 있고 하나님의 신은 수면에 운행하시니라'),
+        Verse('창세기', 0, 1, 3, '하나님이 가라사대 빛이 있으라 하시매 빛이 있었고')
+      ];
+      expect(list, expectedList);
+    });
+
+    test('returns list of verses in different chapters', () {
+      final list = bible.versesFrom(0, 1, 31, 3);
+      final expectedList = [
+        Verse('창세기', 0, 1, 31,
+            '하나님이 그 지으신 모든 것을 보시니 보시기에 심히 좋았더라 저녁이 되며 아침이 되니 이는 여섯째 날이니라'),
+        Verse('창세기', 0, 2, 1, '천지와 만물이 다 이루니라'),
+        Verse('창세기', 0, 2, 2,
+            '하나님의 지으시던 일이 일곱째 날이 이를 때에 마치니 그 지으시던 일이 다하므로 일곱째 날에 안식하시니라')
+      ];
+      expect(list, expectedList);
+    });
+
+    test('returns list of verses in different books', () {
+      final list = bible.versesFrom(0, 50, 26, 3);
+      final expectedList = [
+        Verse(
+            '창세기', 0, 50, 26, '요셉이 일백십 세에 죽으매 그들이 그의 몸에 향 재료를 넣고 애굽에서 입관하였더라'),
+        Verse('출애굽기', 1, 1, 1, '야곱과 함께 각기 권속을 데리고 애굽에 이른 이스라엘 아들들의 이름은 이러하니'),
+        Verse('출애굽기', 1, 1, 2, '르우벤과 시므온과 레위와 유다와')
+      ];
+      expect(list, expectedList);
+    });
+  });
+
   group('getBookIndex()', () {
     test('returns -1 if book is empty', () {
       expect(KoreanBible().getBookIndex(''), -1);
@@ -93,6 +166,7 @@ void main() {
                   e.message == 'line does not fit the standard format'))));
     });
   });
+
   group('constant', () {
     test('shortenedBookNames is correct', () {
       expect(KoreanBible().shortenedBookNames, [
