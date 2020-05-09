@@ -33,7 +33,7 @@ class Verse implements Comparable<Verse> {
   int compareTo(Verse other) {
     int diff = book - other.book;
     if (diff != 0) return diff;
-    
+
     diff = chapter - other.chapter;
     if (diff != 0) return diff;
 
