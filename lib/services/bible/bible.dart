@@ -51,16 +51,41 @@ abstract class Bible {
     return indexedBible[book][chapter - 1][verse - 1];
   }
 
-  /// Returns list of verses in given [book] and [chapter] and in between [verse1] and [verse2] inclusively.
-  List<Verse> versesInRange(int book, int chapter, int verse1, int verse2) {
-    return versesFrom(book, chapter, verse1, verse2 - verse1 + 1);
+  /// Returns list of verses in given [book] and [chapter1]:[verse1]
+  /// and [chapter2]:[verse2] inclusively.
+  List<Verse> versesInRange(
+      int book, int chapter1, int verse1, int chapter2, int verse2) {
+    int count = 0;
+    if (chapter1 == chapter2) {
+      count = verse2 - verse1 + 1;
+    } else {
+      count = chapterAt(book, chapter1).length - verse1 + 1;
+      for (int i = chapter1 + 1; i < chapter2; i++) {
+        count += chapterAt(book, chapter2).length;
+      }
+      count += verse2;
+    }
+    return versesFrom(book, chapter1, verse1, count);
   }
 
   /// Returns list of [count] verses starting from given [book], [chapter], and [verse1].
   List<Verse> versesFrom(int book, int chapter, int verse, int count) {
     final verses = List<Verse>(count);
-    for (int i = 0; i <= count; i++) {
-      verses[i] = verseAt(book, chapter, verse + i);
+    int bookChapterCount = bookToNumChapters[book];
+    int chapterVerseCount = chapterAt(book, chapter).length;
+    for (int i = 0; i < count; i++) {
+      verses[i] = verseAt(book, chapter, verse);
+      verse++;
+      if (verse > chapterVerseCount) {
+        verse = 1;
+        chapter += 1;
+        if (chapter > bookChapterCount) {
+          chapter = 1;
+          book += 1;
+          bookChapterCount = bookToNumChapters[book];
+        }
+        chapterVerseCount = chapterAt(book, chapter).length;
+      }
     }
     return verses;
   }

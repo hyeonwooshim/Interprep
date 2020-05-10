@@ -28,6 +28,7 @@ void main() {
                   e.message == 'line does not fit the standard format'))));
     });
   });
+
   group('constant', () {
     test('numBooks is correct', () {
       expect(Bible.numBooks, 66);

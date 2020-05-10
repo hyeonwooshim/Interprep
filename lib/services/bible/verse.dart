@@ -1,4 +1,4 @@
-class Verse {
+class Verse implements Comparable<Verse> {
   String bookName;
   int book;
   int chapter;
@@ -28,5 +28,16 @@ class Verse {
     hash = hash * 31 + verse.hashCode;
     hash = hash * 31 + text.hashCode;
     return hash;
+  }
+
+  int compareTo(Verse other) {
+    int diff = book - other.book;
+    if (diff != 0) return diff;
+
+    diff = chapter - other.chapter;
+    if (diff != 0) return diff;
+
+    diff = verse - other.verse;
+    return diff;
   }
 }

@@ -57,6 +57,88 @@ void main() {
     });
   });
 
+  group('versesInRange()', () {
+    NkjvBible bible;
+
+    setUpAll(() {
+      final lines = File('assets/NKJVer.txt').readAsLinesSync();
+      bible = NkjvBible.fromLines(lines);
+    });
+
+    test('returns list of verses in same chapter', () {
+      final list = bible.versesInRange(0, 1, 1, 1, 3);
+      final expectedList = [
+        Verse('Genesis', 0, 1, 1,
+            'In the beginning God created the heavens and the earth.'),
+        Verse('Genesis', 0, 1, 2,
+            'The earth was without form, and void; and darkness was on the face of the deep. And the Spirit of God was hovering over the face of the waters.'),
+        Verse('Genesis', 0, 1, 3,
+            'Then God said, "Let there be light"; and there was light.')
+      ];
+      expect(list, expectedList);
+    });
+
+    test('returns list of verses in different chapters', () {
+      final list = bible.versesInRange(0, 1, 31, 2, 2);
+      final expectedList = [
+        Verse('Genesis', 0, 1, 31,
+            'Then God saw everything that He had made, and indeed it was very good. So the evening and the morning were the sixth day.'),
+        Verse('Genesis', 0, 2, 1,
+            'Thus the heavens and the earth, and all the host of them, were finished.'),
+        Verse('Genesis', 0, 2, 2,
+            'And on the seventh day God ended His work which He had done, and He rested on the seventh day from all His work which He had done.')
+      ];
+      expect(list, expectedList);
+    });
+  });
+
+  group('versesFrom()', () {
+    NkjvBible bible;
+
+    setUpAll(() {
+      final lines = File('assets/NKJVer.txt').readAsLinesSync();
+      bible = NkjvBible.fromLines(lines);
+    });
+
+    test('returns list of verses in same chapter', () {
+      final list = bible.versesFrom(0, 1, 1, 3);
+      final expectedList = [
+        Verse('Genesis', 0, 1, 1,
+            'In the beginning God created the heavens and the earth.'),
+        Verse('Genesis', 0, 1, 2,
+            'The earth was without form, and void; and darkness was on the face of the deep. And the Spirit of God was hovering over the face of the waters.'),
+        Verse('Genesis', 0, 1, 3,
+            'Then God said, "Let there be light"; and there was light.')
+      ];
+      expect(list, expectedList);
+    });
+
+    test('returns list of verses in different chapters', () {
+      final list = bible.versesFrom(0, 1, 31, 3);
+      final expectedList = [
+        Verse('Genesis', 0, 1, 31,
+            'Then God saw everything that He had made, and indeed it was very good. So the evening and the morning were the sixth day.'),
+        Verse('Genesis', 0, 2, 1,
+            'Thus the heavens and the earth, and all the host of them, were finished.'),
+        Verse('Genesis', 0, 2, 2,
+            'And on the seventh day God ended His work which He had done, and He rested on the seventh day from all His work which He had done.')
+      ];
+      expect(list, expectedList);
+    });
+
+    test('returns list of verses in different books', () {
+      final list = bible.versesFrom(0, 50, 26, 3);
+      final expectedList = [
+        Verse('Genesis', 0, 50, 26,
+            'So Joseph died, being one hundred and ten years old; and they embalmed him, and he was put in a coffin in Egypt.'),
+        Verse('Exodus', 1, 1, 1,
+            'Now these are the names of the children of Israel who came to Egypt; each man and his household came with Jacob:'),
+        Verse('Exodus', 1, 1, 2, 'Reuben, Simeon, Levi, and Judah;')
+      ];
+      expect(list, expectedList);
+    });
+  });
+
   group('getBookIndex(String book)', () {
     test('returns -1 if book is empty', () {
       expect(NkjvBible().getBookIndex(''), -1);
