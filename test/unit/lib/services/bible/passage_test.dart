@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:interprep/services/bible/korean_bible.dart';
+import 'package:interprep/services/bible/nkjv_bible.dart';
 import 'package:interprep/services/bible/passage.dart';
 import 'package:interprep/services/bible/verse.dart';
 
 void main() {
   group('Constructor', () {
-    final lines = File('assets/KoreanVer.txt').readAsLinesSync();
-    final bible = KoreanBible.fromLines(lines);
+    NkjvBible bible;
+
+    setUpAll(() {
+      final lines = File('assets/NKJVer.txt').readAsLinesSync();
+      bible = NkjvBible.fromLines(lines);
+    });
 
     test('returns new Passage', () {
       final v1 = Verse('', 0, 1, 3, '');
@@ -50,6 +54,84 @@ void main() {
               isArgumentError,
               predicate((e) =>
                   e.message == 'start cannot come later than the end verse'))));
+    });
+  });
+
+  group('locationString()', () {
+    NkjvBible bible;
+
+    setUpAll(() {
+      final lines = File('assets/NKJVer.txt').readAsLinesSync();
+      bible = NkjvBible.fromLines(lines);
+    });
+
+    group('not using abbreviation', () {
+      test('returns range string with one verse', () {
+        final v1 = Verse('', 0, 1, 1, '');
+        final v2 = Verse('', 0, 1, 1, '');
+
+        final passage = Passage(bible, v1, v2);
+        expect(passage.locationString(), 'Genesis 1:1');
+      });
+
+      test('returns range string within same chapter', () {
+        final v1 = Verse('', 0, 1, 1, '');
+        final v2 = Verse('', 0, 1, 4, '');
+
+        final passage = Passage(bible, v1, v2);
+        expect(passage.locationString(), 'Genesis 1:1-4');
+      });
+
+      test('returns range string within same book', () {
+        final v1 = Verse('', 0, 1, 1, '');
+        final v2 = Verse('', 0, 3, 1, '');
+
+        final passage = Passage(bible, v1, v2);
+        expect(passage.locationString(), 'Genesis 1:1-3:1');
+      });
+
+      test('returns range string in different books', () {
+        final v1 = Verse('', 0, 1, 1, '');
+        final v2 = Verse('', 2, 1, 1, '');
+
+        final passage = Passage(bible, v1, v2);
+        expect(passage.locationString(), 'Genesis 1:1-Leviticus 1:1');
+      });
+    });
+
+    group('using abbreviation', () {
+      test('returns range string with one verse', () {
+        final v1 = Verse('', 0, 1, 1, '');
+        final v2 = Verse('', 0, 1, 1, '');
+
+        final passage = Passage(bible, v1, v2);
+        expect(passage.locationString(useAbbreviation: true), 'Gen 1:1');
+      });
+
+      test('returns range string within same chapter', () {
+        final v1 = Verse('', 0, 1, 1, '');
+        final v2 = Verse('', 0, 1, 4, '');
+
+        final passage = Passage(bible, v1, v2);
+        expect(passage.locationString(useAbbreviation: true), 'Gen 1:1-4');
+      });
+
+      test('returns range string within same book', () {
+        final v1 = Verse('', 0, 1, 1, '');
+        final v2 = Verse('', 0, 3, 1, '');
+
+        final passage = Passage(bible, v1, v2);
+        expect(passage.locationString(useAbbreviation: true), 'Gen 1:1-3:1');
+      });
+
+      test('returns range string in different books', () {
+        final v1 = Verse('', 0, 1, 1, '');
+        final v2 = Verse('', 2, 1, 1, '');
+
+        final passage = Passage(bible, v1, v2);
+        expect(
+            passage.locationString(useAbbreviation: true), 'Gen 1:1-Lev 1:1');
+      });
     });
   });
 }

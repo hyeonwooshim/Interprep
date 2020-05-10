@@ -6,7 +6,7 @@ class TwoLineFormat extends PassageFormat {
 
   TwoLineFormat(locationBefore);
 
-  String formatPassage(Passage passage) {
+  String formatPassage(Passage passage1, Passage passage2) {
     return '';
   }
 }
