@@ -5,11 +5,12 @@ import 'package:interprep/services/bible/bible.dart';
 import 'package:interprep/services/bible/nkjv_bible.dart';
 import 'package:interprep/services/bible/verse.dart';
 
+import '../../../../test_helper.dart';
+
 void main() {
   group('Constructor fromLines', () {
     test('produces correctly indexed Bible', () {
-      final lines = File('assets/NKJVer.txt').readAsLinesSync();
-      final bible = NkjvBible.fromLines(lines);
+      final bible = newNkjvBible();
 
       expect(bible.indexedBible.length, Bible.numBooks);
       expect(
@@ -61,8 +62,7 @@ void main() {
     NkjvBible bible;
 
     setUpAll(() {
-      final lines = File('assets/NKJVer.txt').readAsLinesSync();
-      bible = NkjvBible.fromLines(lines);
+      bible = newNkjvBible();
     });
 
     test('returns list of verses in same chapter', () {
@@ -96,8 +96,7 @@ void main() {
     NkjvBible bible;
 
     setUpAll(() {
-      final lines = File('assets/NKJVer.txt').readAsLinesSync();
-      bible = NkjvBible.fromLines(lines);
+      bible = newNkjvBible();
     });
 
     test('returns list of verses in same chapter', () {
