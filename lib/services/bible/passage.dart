@@ -28,8 +28,10 @@ class Passage {
         start.book, start.chapter, start.verse, end.chapter, end.verse);
   }
 
-  String locationString({String rangeSymbol = '-', bool useAbbreviation = false}) {
-    final bookNames = useAbbreviation ? bible.shortenedBookNames: bible.bookNames;
+  String locationString(
+      {String rangeSymbol = '-', bool useAbbreviation = false}) {
+    final bookNames =
+        useAbbreviation ? bible.shortenedBookNames : bible.bookNames;
 
     String left = '${bookNames[startVerse.book]} ';
     String right;
