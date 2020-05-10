@@ -5,13 +5,14 @@ import 'package:interprep/services/bible/nkjv_bible.dart';
 import 'package:interprep/services/bible/passage.dart';
 import 'package:interprep/services/bible/verse.dart';
 
+import '../../../../test_helper.dart';
+
 void main() {
   group('Constructor', () {
     NkjvBible bible;
 
     setUpAll(() {
-      final lines = File('assets/NKJVer.txt').readAsLinesSync();
-      bible = NkjvBible.fromLines(lines);
+      bible = newNkjvBible();
     });
 
     test('returns new Passage', () {
@@ -61,8 +62,7 @@ void main() {
     NkjvBible bible;
 
     setUpAll(() {
-      final lines = File('assets/NKJVer.txt').readAsLinesSync();
-      bible = NkjvBible.fromLines(lines);
+      bible = newNkjvBible();
     });
 
     group('not using abbreviation', () {

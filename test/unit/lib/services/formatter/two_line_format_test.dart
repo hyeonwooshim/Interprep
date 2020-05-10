@@ -7,6 +7,8 @@ import 'package:interprep/services/bible/passage.dart';
 import 'package:interprep/services/bible/verse.dart';
 import 'package:interprep/services/formatter/two_line_format.dart';
 
+import '../../../../test_helper.dart';
+
 void main() {
   group('formatPassagePair()', () {
     TwoLineFormat format;
@@ -19,10 +21,8 @@ void main() {
     setUpAll(() {
       format = TwoLineFormat();
 
-      var lines = File('assets/KoreanVer.txt').readAsLinesSync();
-      bible1 = KoreanBible.fromLines(lines);
-      lines = File('assets/NKJVer.txt').readAsLinesSync();
-      bible2 = NkjvBible.fromLines(lines);
+      bible1 = newKoreanBible();
+      bible2 = newNkjvBible();
 
       final v1 = Verse('', 0, 1, 1, '');
       final v2 = Verse('', 0, 1, 2, '');

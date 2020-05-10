@@ -5,11 +5,12 @@ import 'package:interprep/services/bible/bible.dart';
 import 'package:interprep/services/bible/korean_bible.dart';
 import 'package:interprep/services/bible/verse.dart';
 
+import '../../../../test_helper.dart';
+
 void main() {
   group('Constructor fromLines', () {
     test('produces correctly indexed Bible', () {
-      final lines = File('assets/KoreanVer.txt').readAsLinesSync();
-      final bible = KoreanBible.fromLines(lines);
+      final bible = newKoreanBible();
 
       expect(bible.indexedBible.length, Bible.numBooks);
       expect(
@@ -61,8 +62,7 @@ void main() {
     KoreanBible bible;
 
     setUpAll(() {
-      final lines = File('assets/KoreanVer.txt').readAsLinesSync();
-      bible = KoreanBible.fromLines(lines);
+      bible = newKoreanBible();
     });
 
     test('returns list of verses in same chapter', () {
@@ -92,8 +92,7 @@ void main() {
     KoreanBible bible;
 
     setUpAll(() {
-      final lines = File('assets/KoreanVer.txt').readAsLinesSync();
-      bible = KoreanBible.fromLines(lines);
+      bible = newKoreanBible();
     });
 
     test('returns list of verses in same chapter', () {
