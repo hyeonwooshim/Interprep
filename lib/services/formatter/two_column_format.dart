@@ -13,14 +13,13 @@ class TwoColumnFormat extends PassageFormat {
     return '<pre><b>"$loc1"&#9;"$loc2"</b></pre><br>'
         '<table style="border:1px solid black; border-collapse:collapse;'
         'padding-left:0.08in; padding-right:0.08in; padding-top:0in; padding-bottom:0in;">'
-        '<tr>'
-        '<td style="vertical-align:top; border:1px solid black;">$formatted1</td>'
-        '<td style="vertical-align:top; border:1px solid black;">$formatted2</td>'
-        '</tr>'
+        '<tr>$formatted1$formatted2</tr>'
         '</table>';
   }
 
   String _formatIndividualPassage(passage) {
-    return passage.verses.map((v) => '${v.verse}. ${v.text}').join('<br><br>');
+    final formatted =
+        passage.verses.map((v) => '${v.verse}. ${v.text}').join('<br><br>');
+    return '<td style="vertical-align:top; border:1px solid black;">$formatted</td>';
   }
 }
