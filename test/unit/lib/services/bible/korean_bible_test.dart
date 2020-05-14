@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:interprep/services/bible/bible.dart';
 import 'package:interprep/services/bible/korean_bible.dart';

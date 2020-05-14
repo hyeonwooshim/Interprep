@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:interprep/services/bible/nkjv_bible.dart';
 import 'package:interprep/services/bible/passage.dart';
