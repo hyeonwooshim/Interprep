@@ -38,10 +38,7 @@ class CardInterface extends StatefulWidget {
   _CardInterfaceState createState() => new _CardInterfaceState();
 }
 
-KoreanBible koreanBible = new KoreanBible();
-NkjvBible nkjvBible = new NkjvBible();
-
-List<String> suggestions = koreanBible.bookNames + nkjvBible.bookNames;
+List<String> suggestions = KoreanBible.fullBookNames + NkjvBible.fullBookNames;
 
 enum VerseStatus { recited, read }
 enum VerseLocation { before, after }
@@ -200,18 +197,6 @@ class _CardInterfaceState extends State<CardInterface> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  // Container(
-                  //   child: Text('Book Name :',
-                  //       textAlign: TextAlign.right,
-                  //       style: TextStyle(
-                  //         fontSize: 15,
-                  //         fontWeight: FontWeight.bold,
-                  //       )),
-                  //   alignment: Alignment.centerRight,
-                  //   width: (MediaQuery.of(context).size.width / 2.5) / 3.5,
-                  //   height: (MediaQuery.of(context).size.height / 1.25) / 17,
-                  // ),
-
                   Flexible(
                     child: Container(
                       child: ListTile(
@@ -226,17 +211,6 @@ class _CardInterfaceState extends State<CardInterface> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  // Container(
-                  //   child: Text('Chapter :',
-                  //       textAlign: TextAlign.right,
-                  //       style: TextStyle(
-                  //         fontSize: 15,
-                  //         fontWeight: FontWeight.bold,
-                  //       )),
-                  //   alignment: Alignment.centerRight,
-                  //   width: (MediaQuery.of(context).size.width / 2.5) / 3.5,
-                  //   height: (MediaQuery.of(context).size.height / 1.25) / 17,
-                  // ),
                   Flexible(
                     child: Container(
                       child: ListTile(
@@ -269,17 +243,6 @@ class _CardInterfaceState extends State<CardInterface> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  // Container(
-                  //   child: Text('Beginning V :',
-                  //       textAlign: TextAlign.right,
-                  //       style: TextStyle(
-                  //         fontSize: 15,
-                  //         fontWeight: FontWeight.bold,
-                  //       )),
-                  //   alignment: Alignment.centerRight,
-                  //   width: (MediaQuery.of(context).size.width / 2.5) / 3.5,
-                  //   height: (MediaQuery.of(context).size.height / 1.25) / 17,
-                  // ),
                   Flexible(
                     child: Container(
                       child: ListTile(
@@ -312,17 +275,6 @@ class _CardInterfaceState extends State<CardInterface> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  // Container(
-                  //   child: Text('Ending V :',
-                  //       textAlign: TextAlign.right,
-                  //       style: TextStyle(
-                  //         fontSize: 15,
-                  //         fontWeight: FontWeight.bold,
-                  //       )),
-                  //   alignment: Alignment.centerRight,
-                  //   width: (MediaQuery.of(context).size.width / 2.5) / 3.5,
-                  //   height: (MediaQuery.of(context).size.height / 1.25) / 17,
-                  // ),
                   Flexible(
                     child: Container(
                       child: ListTile(
