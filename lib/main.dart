@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'services/bible/korean_bible.dart';
 import 'services/bible/nkjv_bible.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(Interprep());
 
-class MyApp extends StatelessWidget {
+class Interprep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
