@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/services.dart';
+import 'package:interprep/services/bible_source.dart';
 import 'services/bible/korean_bible.dart';
 import 'services/bible/nkjv_bible.dart';
 
@@ -26,7 +27,27 @@ class Interprep extends StatelessWidget {
             ),
           ],
         ),
-        body: CardInterface(),
+        body: FutureBuilder(
+            future: Future.wait([
+              BibleSource.loadKoreanBible(context),
+              BibleSource.loadNkjvBible(context)
+            ]),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  return CardInterface(
+                      koreanBible: snapshot.data[0],
+                      nkjvBible: snapshot.data[1]);
+                }
+              }
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[CircularProgressIndicator()],
+                ),
+              );
+            }),
       ),
       debugShowCheckedModeBanner: false,
     );
@@ -34,8 +55,15 @@ class Interprep extends StatelessWidget {
 }
 
 class CardInterface extends StatefulWidget {
+  final KoreanBible koreanBible;
+  final NkjvBible nkjvBible;
+
+  CardInterface({Key key, @required this.koreanBible, @required this.nkjvBible})
+      : super(key: key);
+
   @override
-  _CardInterfaceState createState() => new _CardInterfaceState();
+  _CardInterfaceState createState() =>
+      new _CardInterfaceState(koreanBible: koreanBible, nkjvBible: nkjvBible);
 }
 
 List<String> suggestions = KoreanBible.fullBookNames + NkjvBible.fullBookNames;
@@ -44,6 +72,9 @@ enum VerseStatus { recited, read }
 enum VerseLocation { before, after }
 
 class _CardInterfaceState extends State<CardInterface> {
+  final KoreanBible koreanBible;
+  final NkjvBible nkjvBible;
+
   VerseStatus _verseStatus = VerseStatus.recited;
   VerseLocation _verseLocation = VerseLocation.before;
   String _currentBook = '';
@@ -56,7 +87,7 @@ class _CardInterfaceState extends State<CardInterface> {
   TextEditingController bookName = new TextEditingController();
 
   //This body is for text auto-completion for book name
-  _CardInterfaceState() {
+  _CardInterfaceState({@required this.koreanBible, @required this.nkjvBible}) {
     textField = SimpleAutoCompleteTextField(
       key: key,
       controller: bookName,
@@ -227,7 +258,7 @@ class _CardInterfaceState extends State<CardInterface> {
                           onChanged: (text) {
                             if (text != null) {
                               _currentChapter = int.tryParse(text);
-                            } 
+                            }
                           },
                           // onSubmitted: (text) => {
                           //   print(text),

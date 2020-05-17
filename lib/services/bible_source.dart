@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 
+import 'bible/korean_bible.dart';
+import 'bible/nkjv_bible.dart';
+
 class BibleSource {
-  static Future<List<String>> loadNkjvText(BuildContext context) async {
-    return await readAsLines(context, 'assets/KoreanVer.txt');
-  }
-  
-  static Future<List<String>> loadKoreanText(BuildContext context) async {
-    return await readAsLines(context, 'assets/NkjVer.txt');
+  static Future<KoreanBible> loadKoreanBible(BuildContext context) async {
+    return readAsLines(context, 'assets/KoreanVer.txt')
+        .then((lines) => KoreanBible.fromLines(lines));
   }
 
-  static Future<List<String>> readAsLines(BuildContext context, String filePath) async{
-    final str = await DefaultAssetBundle.of(context).loadString(filePath);
-    return str.split('\n');
+  static Future<NkjvBible> loadNkjvBible(BuildContext context) async {
+    return readAsLines(context, 'assets/NKJVer.txt')
+        .then((lines) => NkjvBible.fromLines(lines));
+  }
+
+  static Future<List<String>> readAsLines(
+      BuildContext context, String filePath) async {
+    print('jesus christ');
+    return DefaultAssetBundle.of(context)
+        .loadString(filePath)
+        .then((str) => str.split('\n'))
+        .catchError((e) => print(e));
   }
 }
