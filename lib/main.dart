@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/services.dart';
+import 'package:interprep/services/bible/passage.dart';
+import 'package:interprep/services/bible/verse.dart';
 import 'package:interprep/services/bible_source.dart';
+import 'package:interprep/services/formatter/two_column_format.dart';
+import 'package:interprep/services/formatter/two_line_format.dart';
 import 'services/bible/korean_bible.dart';
 import 'services/bible/nkjv_bible.dart';
 
@@ -100,17 +104,29 @@ class _CardInterfaceState extends State<CardInterface> {
         labelText: 'Book Name',
         isDense: true,
       ),
-      textSubmitted: (text) => setState(() {
-        _currentBook = text;
-        bookName.text = text;
-        print(_currentBook);
-      }),
+      textSubmitted: (text) => print(text),
     );
   }
 
-  // void copyVerse() {
-  //   Clipboard.setData(ClipboardData(text: _currentBook));
-  // }
+  void copyVerse() {
+    int book = koreanBible.getBookIndex(_currentBook);
+    if (book == -1) book = nkjvBible.getBookIndex(_currentBook);
+    final v1 = Verse(null, book, _currentChapter, _currentStartVerse, null);
+    final v2 = Verse(null, book, _currentChapter, _currentEndVerse, null);
+    final korean = Passage(koreanBible, v1, v2);
+    final nkjv = Passage(nkjvBible, v1, v2);
+
+    String str;
+    if (_verseStatus == VerseStatus.recited) {
+      final locationFirst = _verseLocation == VerseLocation.before;
+      str = TwoLineFormat().formatPassagePair(korean, nkjv,
+          locationFirst: locationFirst, useAbbreviation1: true);
+    } else {
+      str = TwoColumnFormat()
+          .formatPassagePair(korean, nkjv, useAbbreviation1: true);
+    }
+    Clipboard.setData(ClipboardData(text: str));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -347,8 +363,7 @@ class _CardInterfaceState extends State<CardInterface> {
                         color: Colors.blue,
                         textColor: Colors.white,
                         onPressed: () {
-                          //Do COPY VERSE ACTION
-                          // copyVerse();
+                          copyVerse();
                         }),
                   ),
                 ],
