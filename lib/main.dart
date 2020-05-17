@@ -31,27 +31,7 @@ class Interprep extends StatelessWidget {
             ),
           ],
         ),
-        body: FutureBuilder(
-            future: Future.wait([
-              BibleSource.loadKoreanBible(context),
-              BibleSource.loadNkjvBible(context)
-            ]),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData) {
-                  return CardInterface(
-                      koreanBible: snapshot.data[0],
-                      nkjvBible: snapshot.data[1]);
-                }
-              }
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[CircularProgressIndicator()],
-                ),
-              );
-            }),
+        body: CardInterface(),
       ),
       debugShowCheckedModeBanner: false,
     );
@@ -59,15 +39,8 @@ class Interprep extends StatelessWidget {
 }
 
 class CardInterface extends StatefulWidget {
-  final KoreanBible koreanBible;
-  final NkjvBible nkjvBible;
-
-  CardInterface({Key key, @required this.koreanBible, @required this.nkjvBible})
-      : super(key: key);
-
   @override
-  _CardInterfaceState createState() =>
-      new _CardInterfaceState(koreanBible: koreanBible, nkjvBible: nkjvBible);
+  _CardInterfaceState createState() => new _CardInterfaceState();
 }
 
 List<String> suggestions = KoreanBible.fullBookNames + NkjvBible.fullBookNames;
@@ -76,8 +49,9 @@ enum VerseStatus { recited, read }
 enum VerseLocation { before, after }
 
 class _CardInterfaceState extends State<CardInterface> {
-  final KoreanBible koreanBible;
-  final NkjvBible nkjvBible;
+  Future<List<dynamic>> bibleFetch;
+  KoreanBible koreanBible;
+  NkjvBible nkjvBible;
 
   VerseStatus _verseStatus = VerseStatus.recited;
   VerseLocation _verseLocation = VerseLocation.before;
@@ -91,7 +65,7 @@ class _CardInterfaceState extends State<CardInterface> {
   TextEditingController bookName = new TextEditingController();
 
   //This body is for text auto-completion for book name
-  _CardInterfaceState({@required this.koreanBible, @required this.nkjvBible}) {
+  _CardInterfaceState() {
     textField = SimpleAutoCompleteTextField(
       key: key,
       controller: bookName,
@@ -106,6 +80,14 @@ class _CardInterfaceState extends State<CardInterface> {
       ),
       textSubmitted: (text) => print(text),
     );
+  }
+
+  void initState() {
+    super.initState();
+    bibleFetch = Future.wait([
+      BibleSource.loadKoreanBible(context),
+      BibleSource.loadNkjvBible(context)
+    ]);
   }
 
   void copyVerse() {
@@ -130,6 +112,30 @@ class _CardInterfaceState extends State<CardInterface> {
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: bibleFetch,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              koreanBible ??= snapshot.data[0];
+              nkjvBible ??= snapshot.data[1];
+              return mainWidget(context);
+            }
+          }
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                CircularProgressIndicator(),
+                Text('Loading the Bible...'),
+              ],
+            ),
+          );
+        });
+  }
+
+  Widget mainWidget(BuildContext context) {
     return Center(
       child: SizedBox(
         width: MediaQuery.of(context).size.width / 2.5,
