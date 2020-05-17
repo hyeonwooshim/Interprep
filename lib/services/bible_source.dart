@@ -16,7 +16,6 @@ class BibleSource {
 
   static Future<List<String>> readAsLines(
       BuildContext context, String filePath) async {
-    print('jesus christ');
     return DefaultAssetBundle.of(context)
         .loadString(filePath)
         .then((str) => str.split('\n'))

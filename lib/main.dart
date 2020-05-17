@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/services.dart';
+import 'package:interprep/services/bible/passage.dart';
+import 'package:interprep/services/bible/verse.dart';
 import 'package:interprep/services/bible_source.dart';
+import 'package:interprep/services/formatter/two_line_format.dart';
 import 'services/bible/korean_bible.dart';
 import 'services/bible/nkjv_bible.dart';
 
@@ -108,9 +111,17 @@ class _CardInterfaceState extends State<CardInterface> {
     );
   }
 
-  // void copyVerse() {
-  //   Clipboard.setData(ClipboardData(text: _currentBook));
-  // }
+  void copyVerse() {
+    final book = koreanBible.getBookIndex(_currentBook) ??
+        nkjvBible.getBookIndex(_currentBook);
+    final v1 = Verse(null, book, _currentChapter, _currentStartVerse, null);
+    final v2 = Verse(null, book, _currentChapter, _currentEndVerse, null);
+    final korean = Passage(koreanBible, v1, v2);
+    final nkjv = Passage(nkjvBible, v1, v2);
+
+    final str = TwoLineFormat().formatPassagePair(korean, nkjv);
+    Clipboard.setData(ClipboardData(text: str));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -347,8 +358,7 @@ class _CardInterfaceState extends State<CardInterface> {
                         color: Colors.blue,
                         textColor: Colors.white,
                         onPressed: () {
-                          //Do COPY VERSE ACTION
-                          // copyVerse();
+                          copyVerse();
                         }),
                   ),
                 ],
