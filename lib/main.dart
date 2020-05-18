@@ -52,28 +52,67 @@ class _CardInterfaceState extends State<CardInterface> {
   int _currentEndVerse = 0;
   GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
 
-  SimpleAutoCompleteTextField textField;
+  AutoCompleteTextField<String> textField;
   TextEditingController bookName = new TextEditingController();
 
   //This body is for text auto-completion for book name
   _CardInterfaceState() {
-    textField = SimpleAutoCompleteTextField(
-      key: key,
-      controller: bookName,
-      suggestions: suggestions,
-      textChanged: (text) => _currentBook = text,
-      clearOnSubmit: false,
-      submitOnSuggestionTap: false,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Book Name',
-        isDense: true,
-      ),
-      textSubmitted: (text) => setState(() {
-        _currentBook = text;
-        bookName.text = text;
-        print(_currentBook);
-      }),
+    textField = AutoCompleteTextField(
+    //   key: key,
+    //   controller: bookName,
+    //   suggestions: suggestions,
+    //   textChanged: (text) => _currentBook = text,
+    //   clearOnSubmit: false,
+    //   submitOnSuggestionTap: false,
+    //   // textInputAction: TextInputAction.go,
+    //   decoration: InputDecoration(
+    //     border: OutlineInputBorder(),
+    //     labelText: 'Book Name',
+    //     isDense: true,
+    //   ),
+    //   textSubmitted: (text) {
+    //     _currentBook = text;
+    //     bookName.text = text;
+    //     print(text);
+    //   },
+    // );
+    key: key,
+    suggestions: suggestions,
+    clearOnSubmit: false,
+    submitOnSuggestionTap: true,
+    decoration: InputDecoration(
+      border: OutlineInputBorder(),
+      labelText: 'Book Name',
+      isDense: true,
+    ),
+    itemFilter: (item, query) {
+      return item.toLowerCase().startsWith(query.toLowerCase());
+    },
+    itemSorter: (a, b) {
+      return a.compareTo(b);
+    },
+    itemBuilder: (context, item) {
+      return Listener(
+        child: Row (
+          children: <Widget> [Expanded(child: Text(item))],
+        ),
+        onPointerDown: (text) {
+          textField.textField.controller.text = item;
+        }
+      );
+    },
+    itemSubmitted: (item) {
+      setState(() {
+        print('hi');
+        textField.textField.controller.text = item;
+      });
+    },
+    textSubmitted: (text) {
+      print(text);
+      _currentBook = text;
+      textField.textField.controller.text = text;
+    },
+    textInputAction: TextInputAction.go,
     );
   }
 
