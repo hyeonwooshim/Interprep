@@ -335,7 +335,7 @@ class _CardInterfaceState extends State<CardInterface> {
                         title: TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'Start V',
+                            labelText: 'Start Verse',
                             isDense: true,
                           ),
                           keyboardType: TextInputType.number,
@@ -369,7 +369,7 @@ class _CardInterfaceState extends State<CardInterface> {
                         title: TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'End V',
+                            labelText: 'End Verse',
                             isDense: true,
                           ),
                           keyboardType: TextInputType.number,
