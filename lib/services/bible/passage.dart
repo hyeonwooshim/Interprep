@@ -13,16 +13,8 @@ class Passage {
     this.startVerse = start;
     this.endVerse = end;
 
-    if (!bible.hasVerse(start.book, start.chapter, start.verse)) {
-      throw ArgumentError('start verse is invalid');
-    }
-    if (!bible.hasVerse(end.book, end.chapter, end.verse)) {
-      throw ArgumentError('end verse is invalid');
-    }
-
-    if (start.compareTo(end) > 0) {
-      throw ArgumentError('start cannot come later than the end verse');
-    }
+    final errorMsg = validatePassage(bible, start, end);
+    if (errorMsg != null) throw ArgumentError(errorMsg);
 
     verses = bible.versesInRange(
         start.book, start.chapter, start.verse, end.chapter, end.verse);
@@ -55,5 +47,21 @@ class Passage {
     } else {
       return left;
     }
+  }
+
+  static String validatePassage(Bible bible, Verse start, Verse end) {
+    if (!bible.hasVerse(start.book, start.chapter, start.verse)) {
+      return 'start verse is invalid';
+    }
+
+    if (!bible.hasVerse(end.book, end.chapter, end.verse)) {
+      return 'end verse is invalid';
+    }
+
+    if (start.compareTo(end) > 0) {
+      return 'start cannot come later than the end verse';
+    }
+
+    return null;
   }
 }
