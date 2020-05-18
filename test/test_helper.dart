@@ -12,11 +12,17 @@ File assetFile(String name) {
 }
 
 KoreanBible newKoreanBible() {
-  final lines = assetFile('KoreanVer.txt').readAsLinesSync();
-  return KoreanBible.fromLines(lines);
+  return KoreanBible.fromLines(koreanBibleLines());
 }
 
 NkjvBible newNkjvBible() {
-  final lines = assetFile('NKJVer.txt').readAsLinesSync();
-  return NkjvBible.fromLines(lines);
+  return NkjvBible.fromLines(nkjvBibleLines());
+}
+
+List<String> koreanBibleLines() {
+  return assetFile('KoreanVer.txt').readAsLinesSync();
+}
+
+List<String> nkjvBibleLines() {
+  return assetFile('NKJVer.txt').readAsLinesSync();
 }
