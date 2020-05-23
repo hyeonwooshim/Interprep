@@ -85,7 +85,19 @@ class _CardInterfaceState extends State<CardInterface> {
       itemBuilder: (context, item) {
         return Listener(
           child: Row (
-            children: <Widget> [Expanded(child: Text(item))],
+            children: <Widget> [
+              Expanded(
+                child: Text(
+                  item,
+                  style: TextStyle(
+                    fontSize: 16.0,
+                  )
+                )
+              ),
+              Padding(
+                padding: EdgeInsets.all(15.0)
+              )
+            ],
           ),
           onPointerDown: (text) {
             textField.textField.controller.text = item;
@@ -94,7 +106,7 @@ class _CardInterfaceState extends State<CardInterface> {
       },
       itemSubmitted: (item) {
         setState(() {
-          print('hi');
+          _currentBook = item;
           textField.textField.controller.text = item;
         });
       },
@@ -103,7 +115,7 @@ class _CardInterfaceState extends State<CardInterface> {
         _currentBook = text;
         textField.textField.controller.text = text;
       },
-      textInputAction: TextInputAction.go,
+      // textInputAction: TextInputAction.go,
     );
   }
 
@@ -166,10 +178,12 @@ class _CardInterfaceState extends State<CardInterface> {
         width: MediaQuery.of(context).size.width / 2.5,
         height: MediaQuery.of(context).size.height / 1.25,
         child: Card(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: ListView(
             children: <Widget>[
               //first row - Recited/Read
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 20),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -221,6 +235,9 @@ class _CardInterfaceState extends State<CardInterface> {
                 ],
               ),
               //second row - Before/After
+              // Padding(
+              //   padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -272,27 +289,30 @@ class _CardInterfaceState extends State<CardInterface> {
                 ],
               ),
               //third row - Book name
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Flexible(
                     child: Container(
-                      child: ListTile(
-                        title: textField,
-                      ),
-                      width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
+                      child: textField,
+                      width: (MediaQuery.of(context).size.width / 2.5) / 2.0,
                     ),
                   ),
                 ],
               ),
               //fourth row - Chapter
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Flexible(
                     child: Container(
-                      child: ListTile(
-                        title: TextField(
+                      child: TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: 'Chapter',
@@ -311,20 +331,21 @@ class _CardInterfaceState extends State<CardInterface> {
                           //   print(text),
                           // },
                         ),
-                      ),
-                      width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
+                      width: (MediaQuery.of(context).size.width / 2.5) / 2.0,
                     ),
                   ),
                 ],
               ),
               //fifth row - Beginning V
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Flexible(
                     child: Container(
-                      child: ListTile(
-                        title: TextField(
+                      child: TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: 'Start V',
@@ -343,20 +364,21 @@ class _CardInterfaceState extends State<CardInterface> {
                           //   print(text),
                           // },
                         ),
-                      ),
-                      width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
+                      width: (MediaQuery.of(context).size.width / 2.5) / 2.0,
                     ),
                   ),
                 ],
               ),
               //sixth row - Ending V
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Flexible(
                     child: Container(
-                      child: ListTile(
-                        title: TextField(
+                      child: TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: 'End V',
@@ -372,13 +394,15 @@ class _CardInterfaceState extends State<CardInterface> {
                             }
                           },
                         ),
-                      ),
-                      width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
+                      width: (MediaQuery.of(context).size.width / 2.5) / 2.0,
                     ),
                   ),
                 ],
               ),
               //seventh row - submit
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -399,7 +423,7 @@ class _CardInterfaceState extends State<CardInterface> {
                   ),
                 ],
               )
-            ],
+            ]
           ),
         ),
       ),
