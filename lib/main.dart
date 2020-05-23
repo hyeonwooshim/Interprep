@@ -190,10 +190,12 @@ class _CardInterfaceState extends State<CardInterface> {
         width: MediaQuery.of(context).size.width / 2.5,
         height: MediaQuery.of(context).size.height / 1.25,
         child: Card(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: ListView(
             children: <Widget>[
               //first row - Recited/Read
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 20),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -296,6 +298,9 @@ class _CardInterfaceState extends State<CardInterface> {
                 ],
               ),
               //third row - Book name
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -310,6 +315,9 @@ class _CardInterfaceState extends State<CardInterface> {
                 ],
               ),
               //fourth row - Chapter
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -341,6 +349,9 @@ class _CardInterfaceState extends State<CardInterface> {
                 ],
               ),
               //fifth row - Beginning V
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -372,6 +383,9 @@ class _CardInterfaceState extends State<CardInterface> {
                 ],
               ),
               //sixth row - Ending V
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -403,6 +417,9 @@ class _CardInterfaceState extends State<CardInterface> {
                 ],
               ),
               //seventh row - submit
+              Padding(
+                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
