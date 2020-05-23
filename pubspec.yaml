@@ -27,7 +27,6 @@ dependencies:
   cupertino_icons: ^0.1.3
 
 dev_dependencies:
-  autocomplete_textfield:
   flutter_test:
     sdk: flutter
 
