@@ -18,7 +18,6 @@ class BibleSource {
       BuildContext context, String filePath) async {
     return DefaultAssetBundle.of(context)
         .loadString(filePath)
-        .then((str) => str.split('\n'))
-        .catchError((e) => print(e));
+        .then((str) => str.split('\n'));
   }
 }

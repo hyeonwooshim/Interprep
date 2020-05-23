@@ -78,7 +78,6 @@ class _CardInterfaceState extends State<CardInterface> {
         labelText: 'Book Name',
         isDense: true,
       ),
-      textSubmitted: (text) => print(text),
     );
   }
 
@@ -128,15 +127,12 @@ class _CardInterfaceState extends State<CardInterface> {
   }
 
   VoidCallback copyButtonOnPressed() {
-    print('hi');
     final verseArr = initVerses();
     if (verseArr == null) return null;
     final v1 = verseArr[0];
     final v2 = verseArr[1];
-    print('hello');
 
     if (Passage.validatePassage(koreanBible, v1, v2) != null) return null;
-    print('bye');
 
     return () => copyVerse();
   }
