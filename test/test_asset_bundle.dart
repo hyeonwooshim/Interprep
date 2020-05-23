@@ -11,7 +11,6 @@ class TestAssetBundle extends CachingAssetBundle {
     } else if (key == 'assets/NKJVer.txt') {
       name = 'NKJVer.txt';
     }
-    print(name);
     if (name != null)
       return ByteData.view(assetFile(name).readAsBytesSync().buffer);
     return null;
