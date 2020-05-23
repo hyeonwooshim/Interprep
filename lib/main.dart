@@ -56,9 +56,9 @@ class _CardInterfaceState extends State<CardInterface> {
   VerseStatus _verseStatus = VerseStatus.recited;
   VerseLocation _verseLocation = VerseLocation.before;
   String _currentBook = '';
-  int _currentChapter = 0;
-  int _currentStartVerse = 0;
-  int _currentEndVerse = 0;
+  int _currentChapter;
+  int _currentStartVerse;
+  int _currentEndVerse;
   GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
 
   AutoCompleteTextField<String> textField;
@@ -128,10 +128,13 @@ class _CardInterfaceState extends State<CardInterface> {
   }
 
   void copyVerse() {
-    int book = koreanBible.getBookIndex(_currentBook);
-    if (book == -1) book = nkjvBible.getBookIndex(_currentBook);
-    final v1 = Verse(null, book, _currentChapter, _currentStartVerse, null);
-    final v2 = Verse(null, book, _currentChapter, _currentEndVerse, null);
+    final verseArr = initVerses();
+    if (verseArr == null) return;
+    final v1 = verseArr[0];
+    final v2 = verseArr[1];
+
+    if (Passage.validatePassage(koreanBible, v1, v2) != null) return null;
+
     final korean = Passage(koreanBible, v1, v2);
     final nkjv = Passage(nkjvBible, v1, v2);
 
@@ -145,6 +148,34 @@ class _CardInterfaceState extends State<CardInterface> {
           .formatPassagePair(korean, nkjv, useAbbreviation1: true);
     }
     Clipboard.setData(ClipboardData(text: str));
+  }
+
+  List<Verse> initVerses() {
+    int book = koreanBible.getBookIndex(_currentBook);
+    if (book == -1) book = nkjvBible.getBookIndex(_currentBook);
+    if (book == -1) return null;
+
+    if (_currentChapter == null ||
+        _currentStartVerse == null ||
+        _currentEndVerse == null) return null;
+
+    final v1 = Verse(null, book, _currentChapter, _currentStartVerse, null);
+    final v2 = Verse(null, book, _currentChapter, _currentEndVerse, null);
+    return [v1, v2];
+  }
+
+  VoidCallback copyButtonOnPressed() {
+    print('hi');
+    final verseArr = initVerses();
+    if (verseArr == null) return null;
+    final v1 = verseArr[0];
+    final v2 = verseArr[1];
+    print('hello');
+
+    if (Passage.validatePassage(koreanBible, v1, v2) != null) return null;
+    print('bye');
+
+    return () => copyVerse();
   }
 
   @override
@@ -323,9 +354,11 @@ class _CardInterfaceState extends State<CardInterface> {
                             WhitelistingTextInputFormatter.digitsOnly
                           ],
                           onChanged: (text) {
-                            if (text != null) {
-                              _currentChapter = int.tryParse(text);
-                            }
+                            setState(() {
+                              if (text != null) {
+                                _currentChapter = int.tryParse(text);
+                              }
+                            });
                           },
                           // onSubmitted: (text) => {
                           //   print(text),
@@ -348,7 +381,7 @@ class _CardInterfaceState extends State<CardInterface> {
                       child: TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'Start V',
+                            labelText: 'Start Verse',
                             isDense: true,
                           ),
                           keyboardType: TextInputType.number,
@@ -356,9 +389,11 @@ class _CardInterfaceState extends State<CardInterface> {
                             WhitelistingTextInputFormatter.digitsOnly
                           ],
                           onChanged: (text) {
-                            if (text != null) {
-                              _currentStartVerse = int.tryParse(text);
-                            }
+                            setState(() {
+                              if (text != null) {
+                                _currentStartVerse = int.tryParse(text);
+                              }
+                            });
                           },
                           // onSubmitted: (text) => {
                           //   print(text),
@@ -381,7 +416,7 @@ class _CardInterfaceState extends State<CardInterface> {
                       child: TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'End V',
+                            labelText: 'End Verse',
                             isDense: true,
                           ),
                           keyboardType: TextInputType.number,
@@ -389,9 +424,11 @@ class _CardInterfaceState extends State<CardInterface> {
                             WhitelistingTextInputFormatter.digitsOnly
                           ],
                           onChanged: (text) {
-                            if (text != null) {
-                              _currentEndVerse = int.tryParse(text);
-                            }
+                            setState(() {
+                              if (text != null) {
+                                _currentEndVerse = int.tryParse(text);
+                              }
+                            });
                           },
                         ),
                       width: (MediaQuery.of(context).size.width / 2.5) / 2.0,
@@ -417,9 +454,8 @@ class _CardInterfaceState extends State<CardInterface> {
                         ),
                         color: Colors.blue,
                         textColor: Colors.white,
-                        onPressed: () {
-                          copyVerse();
-                        }),
+                        disabledColor: Colors.black12,
+                        onPressed: copyButtonOnPressed()),
                   ),
                 ],
               )
