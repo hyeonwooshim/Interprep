@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:interprep/services/bible/passage.dart';
 import 'package:interprep/services/bible/verse.dart';
 import 'package:interprep/services/bible_source.dart';
@@ -59,27 +59,10 @@ class _CardInterfaceState extends State<CardInterface> {
   int _currentChapter;
   int _currentStartVerse;
   int _currentEndVerse;
-  GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
 
-  SimpleAutoCompleteTextField textField;
-  TextEditingController bookName = new TextEditingController();
-
-  //This body is for text auto-completion for book name
-  _CardInterfaceState() {
-    textField = SimpleAutoCompleteTextField(
-      key: key,
-      controller: bookName,
-      suggestions: suggestions,
-      textChanged: (text) => _currentBook = text,
-      clearOnSubmit: false,
-      submitOnSuggestionTap: false,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Book Name',
-        isDense: true,
-      ),
-    );
-  }
+  TypeAheadField<String> bookNameField;
+  final TextEditingController _bookNameFieldController =
+      TextEditingController();
 
   void initState() {
     super.initState();
@@ -87,6 +70,45 @@ class _CardInterfaceState extends State<CardInterface> {
       BibleSource.loadKoreanBible(context),
       BibleSource.loadNkjvBible(context)
     ]);
+
+    _bookNameFieldController.addListener(() {
+      setState(() => _currentBook = _bookNameFieldController.text);
+    });
+    bookNameField = TypeAheadField<String>(
+        textFieldConfiguration: TextFieldConfiguration(
+            controller: _bookNameFieldController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Book Name',
+              isDense: true,
+            )),
+        suggestionsCallback: (pattern) async {
+          final whitespace = new RegExp(r"\s+\b|\b\s|\s|\b");
+          pattern = pattern.replaceAll(whitespace, "");
+          if (pattern.isEmpty) return [];
+
+          final candidates = suggestions.where((b) {
+            b = b.replaceAll(whitespace, "");
+            return b.toLowerCase().startsWith(pattern.toLowerCase());
+          });
+          if (candidates.isNotEmpty) return candidates;
+          return suggestions.where((b) {
+            b = b.replaceAll(whitespace, "");
+            return b.toLowerCase().contains(pattern.toLowerCase());
+          });
+        },
+        itemBuilder: (context, suggestion) {
+          return Listener(
+            child: ListTile(title: Text(suggestion)),
+            onPointerUp: (_) {
+              _bookNameFieldController.text = suggestion;
+            },
+          );
+        },
+        onSuggestionSelected: (_) {},
+        hideOnEmpty: true,
+        hideOnError: true,
+        hideOnLoading: true);
   }
 
   void copyVerse() {
@@ -280,7 +302,7 @@ class _CardInterfaceState extends State<CardInterface> {
                   Flexible(
                     child: Container(
                       child: ListTile(
-                        title: textField,
+                        title: bookNameField,
                       ),
                       width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
                     ),
@@ -311,9 +333,6 @@ class _CardInterfaceState extends State<CardInterface> {
                               }
                             });
                           },
-                          // onSubmitted: (text) => {
-                          //   print(text),
-                          // },
                         ),
                       ),
                       width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
@@ -345,9 +364,6 @@ class _CardInterfaceState extends State<CardInterface> {
                               }
                             });
                           },
-                          // onSubmitted: (text) => {
-                          //   print(text),
-                          // },
                         ),
                       ),
                       width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
@@ -411,5 +427,13 @@ class _CardInterfaceState extends State<CardInterface> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    _bookNameFieldController.dispose();
+    super.dispose();
   }
 }
