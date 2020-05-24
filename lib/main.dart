@@ -186,264 +186,214 @@ class _CardInterfaceState extends State<CardInterface> {
 
   Widget mainWidget(BuildContext context) {
     return Center(
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width / 2.5,
-        height: MediaQuery.of(context).size.height / 1.25,
-        child: Card(
-          child: ListView(
-            children: <Widget>[
-              //first row - Recited/Read
-              Padding(
-                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 20),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    child: Text('Recited/Read :',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    alignment: Alignment.centerRight,
-                    width: (MediaQuery.of(context).size.width / 2.5) / 2.4,
-                    height: (MediaQuery.of(context).size.height / 1.25) / 17,
-                  ),
-                  Flexible(
-                    child: Radio(
-                      value: VerseStatus.recited,
-                      groupValue: _verseStatus,
-                      onChanged: (VerseStatus value) {
-                        setState(() {
-                          _verseStatus = value;
-                        });
-                      },
-                    ),
-                  ),
-                  Flexible(
-                    child: Text(
-                      'Recited',
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Flexible(
-                    child: Radio(
-                      value: VerseStatus.read,
-                      groupValue: _verseStatus,
-                      onChanged: (VerseStatus value) {
-                        setState(() {
-                          _verseStatus = value;
-                        });
-                      },
-                    ),
-                  ),
-                  Flexible(
-                    child: Text(
-                      'Read',
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ],
-              ),
-              //second row - Before/After
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    child: Text('Before/After :',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    alignment: Alignment.centerRight,
-                    width: (MediaQuery.of(context).size.width / 2.5) / 2.4,
-                    height: (MediaQuery.of(context).size.height / 1.25) / 17,
-                  ),
-                  Flexible(
-                    child: Radio(
-                      value: VerseLocation.before,
-                      groupValue: _verseLocation,
-                      onChanged: (VerseLocation value) {
-                        setState(() {
-                          _verseLocation = value;
-                        });
-                      },
-                    ),
-                  ),
-                  Flexible(
-                    child: Text(
-                      'Before',
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Flexible(
-                    child: Radio(
-                      value: VerseLocation.after,
-                      groupValue: _verseLocation,
-                      onChanged: (VerseLocation value) {
-                        setState(() {
-                          _verseLocation = value;
-                        });
-                      },
-                    ),
-                  ),
-                  Flexible(
-                    child: Text(
-                      'After',
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ],
-              ),
-              //third row - Book name
-              Padding(
-                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Flexible(
-                    child: Container(
-                      child: ListTile(
-                        title: bookNameField,
+        child: Container(
+      alignment: Alignment.center,
+      constraints: BoxConstraints(
+          maxHeight: 700.0, maxWidth: 600.0, minHeight: 400.0, minWidth: 200.0),
+      margin: EdgeInsets.all(15),
+      child: Card(
+          child: Container(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            //first row - Recited/Read
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.centerRight,
+                  constraints: BoxConstraints(minWidth: 150),
+                  child: Text('Recited/Read:',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
+                Flexible(
+                    flex: 2,
+                    child: Row(children: <Widget>[
+                      Radio(
+                        value: VerseStatus.recited,
+                        groupValue: _verseStatus,
+                        onChanged: (VerseStatus value) {
+                          setState(() {
+                            _verseStatus = value;
+                          });
+                        },
                       ),
-                      width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
-                    ),
-                  ),
-                ],
-              ),
-              //fourth row - Chapter
-              Padding(
-                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Flexible(
-                    child: Container(
-                      child: ListTile(
-                        title: TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Chapter',
-                            isDense: true,
-                          ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            WhitelistingTextInputFormatter.digitsOnly
-                          ],
-                          onChanged: (text) {
+                      Text(
+                        'Recited',
+                        textAlign: TextAlign.left,
+                      ),
+                    ])),
+                Flexible(
+                    flex: 2,
+                    child: Row(
+                      children: <Widget>[
+                        Radio(
+                          value: VerseStatus.read,
+                          groupValue: _verseStatus,
+                          onChanged: (VerseStatus value) {
                             setState(() {
-                              if (text != null) {
-                                _currentChapter = int.tryParse(text);
-                              }
+                              _verseStatus = value;
                             });
                           },
                         ),
+                        Text(
+                          'Read',
+                          textAlign: TextAlign.left,
+                        ),
+                      ],
+                    )),
+              ],
+            ),
+            //second row - Before/After
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.centerRight,
+                  constraints: BoxConstraints(minWidth: 150),
+                  child: Text('Before/After:',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
+                Flexible(
+                    flex: 2,
+                    child: Row(children: <Widget>[
+                      Radio(
+                        value: VerseLocation.before,
+                        groupValue: _verseLocation,
+                        onChanged: (VerseLocation value) {
+                          setState(() {
+                            _verseLocation = value;
+                          });
+                        },
                       ),
-                      width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
-                    ),
-                  ),
-                ],
-              ),
-              //fifth row - Beginning V
-              Padding(
-                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Flexible(
-                    child: Container(
-                      child: ListTile(
-                        title: TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Start Verse',
-                            isDense: true,
-                          ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            WhitelistingTextInputFormatter.digitsOnly
-                          ],
-                          onChanged: (text) {
+                      Text(
+                        'Before',
+                        textAlign: TextAlign.left,
+                      ),
+                    ])),
+                Flexible(
+                    flex: 2,
+                    child: Row(
+                      children: <Widget>[
+                        Radio(
+                          value: VerseLocation.after,
+                          groupValue: _verseLocation,
+                          onChanged: (VerseLocation value) {
                             setState(() {
-                              if (text != null) {
-                                _currentStartVerse = int.tryParse(text);
-                              }
+                              _verseLocation = value;
                             });
                           },
                         ),
-                      ),
-                      width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
-                    ),
-                  ),
-                ],
-              ),
-              //sixth row - Ending V
-              Padding(
-                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Flexible(
-                    child: Container(
-                      child: ListTile(
-                        title: TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'End Verse',
-                            isDense: true,
-                          ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            WhitelistingTextInputFormatter.digitsOnly
-                          ],
-                          onChanged: (text) {
-                            setState(() {
-                              if (text != null) {
-                                _currentEndVerse = int.tryParse(text);
-                              }
-                            });
-                          },
+                        Text(
+                          'After',
+                          textAlign: TextAlign.left,
                         ),
+                      ],
+                    )),
+              ],
+            ),
+            //third row - Book name
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: bookNameField,
+                  ),
+                ),
+              ],
+            ),
+            //fourth row - Chapter
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Chapter',
+                  isDense: true,
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                onChanged: (text) {
+                  setState(() {
+                    if (text != null) {
+                      _currentChapter = int.tryParse(text);
+                    }
+                  });
+                },
+              ),
+            ),
+            //fifth row - Beginning V
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Start Verse',
+                  isDense: true,
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                onChanged: (text) {
+                  setState(() {
+                    if (text != null) {
+                      _currentStartVerse = int.tryParse(text);
+                    }
+                  });
+                },
+              ),
+            ),
+            //sixth row - Ending V
+            Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'End Verse',
+                    isDense: true,
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                  onChanged: (text) {
+                    setState(() {
+                      if (text != null) {
+                        _currentEndVerse = int.tryParse(text);
+                      }
+                    });
+                  },
+                )),
+            //seventh row - submit
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FlatButton(
+                    child: Text(
+                      'Copy Verse',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
                       ),
-                      width: (MediaQuery.of(context).size.width / 2.5) / 1.7,
                     ),
-                  ),
-                ],
-              ),
-              //seventh row - submit
-              Padding(
-                padding: EdgeInsets.all((MediaQuery.of(context).size.height / 1.25) / 40),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Flexible(
-                    child: FlatButton(
-                        child: Text(
-                          'Copy Verse',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        color: Colors.blue,
-                        textColor: Colors.white,
-                        disabledColor: Colors.black12,
-                        onPressed: copyButtonOnPressed()),
-                  ),
-                ],
-              )
-            ],
-          ),
+                    color: Colors.blue,
+                    textColor: Colors.white,
+                    disabledColor: Colors.black12,
+                    onPressed: copyButtonOnPressed()),
+              ],
+            )
+          ],
         ),
-      ),
-    );
+      )),
+    ));
   }
 
   @override
