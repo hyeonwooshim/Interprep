@@ -121,6 +121,8 @@ class _CardInterfaceState extends State<CardInterface> {
       hideOnEmpty: true,
       hideOnError: true,
       hideOnLoading: true,
+      // Disables animation.
+      transitionBuilder: (_, suggestionsBox, __) => suggestionsBox,
     );
 
     listenToSelectAllOnFocus(_bookNameFocusNode, _bookNameEditController);
