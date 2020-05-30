@@ -171,7 +171,7 @@ class _CardInterfaceState extends State<CardInterface> {
           if (snapshot.hasData) {
             koreanBible ??= snapshot.data[0];
             nkjvBible ??= snapshot.data[1];
-            return Placeholder(); // mainWidget(context);
+            return mainWidget(context);
           }
         }
         return Center(
