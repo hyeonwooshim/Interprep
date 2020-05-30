@@ -230,7 +230,7 @@ class _CardInterfaceState extends State<CardInterface> {
         ),
         child: Card(
           margin: EdgeInsets.all(15),
-          child: Container(
+          child: SingleChildScrollView(
             padding: EdgeInsets.all(20),
             child: cardContent(context),
           ),
@@ -422,7 +422,7 @@ class _CardInterfaceState extends State<CardInterface> {
               onPressed: copyButtonOnPressed(),
             ),
           ],
-        )
+        ),
       ],
     );
   }
