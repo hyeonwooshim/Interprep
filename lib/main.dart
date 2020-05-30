@@ -17,6 +17,7 @@ class Interprep extends StatelessWidget {
     return MaterialApp(
       title: "Interprep",
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text("Interprep"),
           centerTitle: true,
@@ -170,7 +171,7 @@ class _CardInterfaceState extends State<CardInterface> {
           if (snapshot.hasData) {
             koreanBible ??= snapshot.data[0];
             nkjvBible ??= snapshot.data[1];
-            return mainWidget(context);
+            return Placeholder(); // mainWidget(context);
           }
         }
         return Center(
@@ -198,12 +199,10 @@ class _CardInterfaceState extends State<CardInterface> {
       child: Container(
         alignment: Alignment.center,
         constraints: BoxConstraints(
-            maxHeight: 700.0,
-            maxWidth: 600.0,
-            minHeight: 400.0,
-            minWidth: 200.0),
-        margin: EdgeInsets.all(15),
+          maxWidth: 600,
+        ),
         child: Card(
+          margin: EdgeInsets.all(15),
           child: Container(
             padding: EdgeInsets.all(20),
             child: cardContent(context),
@@ -216,14 +215,15 @@ class _CardInterfaceState extends State<CardInterface> {
   Widget cardContent(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        //first row - Recited/Read
+        // First row - Recited/Read
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
               alignment: Alignment.centerRight,
-              constraints: BoxConstraints(minWidth: 150),
+              constraints: BoxConstraints(minWidth: 120),
               child: Text(
                 'Recited/Read:',
                 textAlign: TextAlign.right,
@@ -275,13 +275,13 @@ class _CardInterfaceState extends State<CardInterface> {
             ),
           ],
         ),
-        //second row - Before/After
+        // Second row - Before/After
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
               alignment: Alignment.centerRight,
-              constraints: BoxConstraints(minWidth: 150),
+              constraints: BoxConstraints(minWidth: 120),
               child: Text(
                 'Before/After:',
                 textAlign: TextAlign.right,
@@ -333,7 +333,7 @@ class _CardInterfaceState extends State<CardInterface> {
             ),
           ],
         ),
-        //third row - Book name
+        // Third row - Book name
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -345,22 +345,39 @@ class _CardInterfaceState extends State<CardInterface> {
             ),
           ],
         ),
-        //fourth row - Chapter
+        // Fourth row - verse location
         Container(
           padding: EdgeInsets.symmetric(vertical: 10),
-          child: chapterTextField(),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Flexible(
+                child: chapterTextField(),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: Text(
+                  ':',
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+              Flexible(
+                child: startVerseTextField(),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: Text(
+                  '~',
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+              Flexible(
+                child: endVerseTextField(),
+              ),
+            ],
+          ),
         ),
-        //fifth row - Beginning V
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: startVerseTextFeidld(),
-        ),
-        //sixth row - Ending V
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: endVerseTextField(),
-        ),
-        //seventh row - submit
+        // Fifth row - submit
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -402,7 +419,7 @@ class _CardInterfaceState extends State<CardInterface> {
     );
   }
 
-  Widget startVerseTextFeidld() {
+  Widget startVerseTextField() {
     return TextField(
       decoration: InputDecoration(
         border: OutlineInputBorder(),
