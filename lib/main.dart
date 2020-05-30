@@ -9,6 +9,8 @@ import 'package:interprep/services/formatter/two_line_format.dart';
 import 'services/bible/korean_bible.dart';
 import 'services/bible/nkjv_bible.dart';
 
+import 'dart:js' as js;
+
 void main() => runApp(Interprep());
 
 class Interprep extends StatelessWidget {
@@ -141,9 +143,31 @@ class _CardInterfaceState extends State<CardInterface> {
     });
   }
 
+  ValueChanged<VerseLocation> beforeOrAfterOnChanged() {
+    if (_verseStatus == VerseStatus.recited) {
+      return (VerseLocation value) {
+        setState(() {
+          _verseLocation = value;
+        });
+      };
+    }
+    return null;
+  }
+
   void copyVerse() {
+    final str = fetchVersesToCopy();
+    if (str == null) return;
+
+    if (_verseStatus == VerseStatus.read) {
+      js.context.callMethod('copyToClip', [str]);
+    } else {
+      Clipboard.setData(ClipboardData(text: str));
+    }
+  }
+
+  String fetchVersesToCopy() {
     final verseArr = initVerses();
-    if (verseArr == null) return;
+    if (verseArr == null) return null;
     final v1 = verseArr[0];
     final v2 = verseArr[1];
 
@@ -155,13 +179,20 @@ class _CardInterfaceState extends State<CardInterface> {
     String str;
     if (_verseStatus == VerseStatus.recited) {
       final locationFirst = _verseLocation == VerseLocation.before;
-      str = TwoLineFormat().formatPassagePair(korean, nkjv,
-          locationFirst: locationFirst, useAbbreviation1: true);
+      str = TwoLineFormat().formatPassagePair(
+        korean,
+        nkjv,
+        locationFirst: locationFirst,
+        useAbbreviation1: true,
+      );
     } else {
-      str = TwoColumnFormat()
-          .formatPassagePair(korean, nkjv, useAbbreviation1: true);
+      str = TwoColumnFormat().formatPassagePair(
+        korean,
+        nkjv,
+        useAbbreviation1: true,
+      );
     }
-    Clipboard.setData(ClipboardData(text: str));
+    return str;
   }
 
   List<Verse> initVerses() {
@@ -198,7 +229,7 @@ class _CardInterfaceState extends State<CardInterface> {
           if (snapshot.hasData) {
             koreanBible ??= snapshot.data[0];
             nkjvBible ??= snapshot.data[1];
-            return mainWidget(context);
+            return smartMainWidget();
           }
         }
         return Center(
@@ -221,33 +252,66 @@ class _CardInterfaceState extends State<CardInterface> {
     );
   }
 
-  Widget mainWidget(BuildContext context) {
-    return Center(
-      child: Container(
-        alignment: Alignment.center,
-        constraints: BoxConstraints(
-          maxWidth: 600,
-        ),
-        child: Card(
-          margin: EdgeInsets.all(15),
-          child: Container(
-            padding: EdgeInsets.all(20),
-            child: cardContent(context),
-          ),
+  Widget smartMainWidget() {
+    return LayoutBuilder(
+      builder: (ctx, constraints) {
+        if (constraints.maxWidth < 1000) {
+          return oneColumnLayout();
+        } else {
+          return twoColumnLayout();
+        }
+      },
+    );
+  }
+
+  Widget oneColumnLayout() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(15),
+      child: Column(
+        children: <Widget>[
+          inputWidget(maxWidth: double.infinity),
+        ],
+      ),
+    );
+  }
+
+  Widget twoColumnLayout() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          inputWidget(),
+        ],
+      ),
+    );
+  }
+
+  Widget inputWidget({double maxWidth = 500}) {
+    return Container(
+      alignment: Alignment.topCenter,
+      constraints: BoxConstraints(
+        maxWidth: maxWidth,
+      ),
+      child: Card(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: inputCardContent(),
         ),
       ),
     );
   }
 
-  Widget cardContent(BuildContext context) {
+  Widget inputCardContent() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
+      children: [
         // First row - Recited/Read
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
+          children: [
             Container(
               alignment: Alignment.centerRight,
               constraints: BoxConstraints(minWidth: 120),
@@ -262,42 +326,30 @@ class _CardInterfaceState extends State<CardInterface> {
             ),
             Flexible(
               flex: 2,
-              child: Row(
-                children: <Widget>[
-                  Radio(
-                    value: VerseStatus.recited,
-                    groupValue: _verseStatus,
-                    onChanged: (VerseStatus value) {
-                      setState(() {
-                        _verseStatus = value;
-                      });
-                    },
-                  ),
-                  Text(
-                    'Recited',
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: RadioListTile<VerseStatus>(
+                title: Text('Recited'),
+                dense: true,
+                value: VerseStatus.recited,
+                groupValue: _verseStatus,
+                onChanged: (VerseStatus value) {
+                  setState(() {
+                    _verseStatus = value;
+                  });
+                },
               ),
             ),
             Flexible(
               flex: 2,
-              child: Row(
-                children: <Widget>[
-                  Radio(
-                    value: VerseStatus.read,
-                    groupValue: _verseStatus,
-                    onChanged: (VerseStatus value) {
-                      setState(() {
-                        _verseStatus = value;
-                      });
-                    },
-                  ),
-                  Text(
-                    'Read',
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: RadioListTile<VerseStatus>(
+                title: Text('Read'),
+                dense: true,
+                value: VerseStatus.read,
+                groupValue: _verseStatus,
+                onChanged: (VerseStatus value) {
+                  setState(() {
+                    _verseStatus = value;
+                  });
+                },
               ),
             ),
           ],
@@ -320,42 +372,22 @@ class _CardInterfaceState extends State<CardInterface> {
             ),
             Flexible(
               flex: 2,
-              child: Row(
-                children: <Widget>[
-                  Radio(
-                    value: VerseLocation.before,
-                    groupValue: _verseLocation,
-                    onChanged: (VerseLocation value) {
-                      setState(() {
-                        _verseLocation = value;
-                      });
-                    },
-                  ),
-                  Text(
-                    'Before',
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: RadioListTile<VerseLocation>(
+                title: Text('Before'),
+                dense: true,
+                value: VerseLocation.before,
+                groupValue: _verseLocation,
+                onChanged: beforeOrAfterOnChanged(),
               ),
             ),
             Flexible(
               flex: 2,
-              child: Row(
-                children: <Widget>[
-                  Radio(
-                    value: VerseLocation.after,
-                    groupValue: _verseLocation,
-                    onChanged: (VerseLocation value) {
-                      setState(() {
-                        _verseLocation = value;
-                      });
-                    },
-                  ),
-                  Text(
-                    'After',
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: RadioListTile<VerseLocation>(
+                title: Text('After'),
+                dense: true,
+                value: VerseLocation.after,
+                groupValue: _verseLocation,
+                onChanged: beforeOrAfterOnChanged(),
               ),
             ),
           ],
@@ -422,7 +454,7 @@ class _CardInterfaceState extends State<CardInterface> {
               onPressed: copyButtonOnPressed(),
             ),
           ],
-        )
+        ),
       ],
     );
   }
