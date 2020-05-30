@@ -141,9 +141,26 @@ class _CardInterfaceState extends State<CardInterface> {
     });
   }
 
+  ValueChanged<VerseLocation> beforeOrAfterOnChanged() {
+    if (_verseStatus == VerseStatus.recited) {
+      return (VerseLocation value) {
+        setState(() {
+          _verseLocation = value;
+        });
+      };
+    }
+    return null;
+  }
+
   void copyVerse() {
+    final str = fetchVersesToCopy();
+    if (str == null) return;
+    Clipboard.setData(ClipboardData(text: str));
+  }
+
+  String fetchVersesToCopy() {
     final verseArr = initVerses();
-    if (verseArr == null) return;
+    if (verseArr == null) return null;
     final v1 = verseArr[0];
     final v2 = verseArr[1];
 
@@ -161,7 +178,7 @@ class _CardInterfaceState extends State<CardInterface> {
       str = TwoColumnFormat()
           .formatPassagePair(korean, nkjv, useAbbreviation1: true);
     }
-    Clipboard.setData(ClipboardData(text: str));
+    return str;
   }
 
   List<Verse> initVerses() {
@@ -198,7 +215,7 @@ class _CardInterfaceState extends State<CardInterface> {
           if (snapshot.hasData) {
             koreanBible ??= snapshot.data[0];
             nkjvBible ??= snapshot.data[1];
-            return mainWidget(context);
+            return smartMainWidget();
           }
         }
         return Center(
@@ -221,33 +238,66 @@ class _CardInterfaceState extends State<CardInterface> {
     );
   }
 
-  Widget mainWidget(BuildContext context) {
-    return Center(
-      child: Container(
-        alignment: Alignment.center,
-        constraints: BoxConstraints(
-          maxWidth: 600,
-        ),
-        child: Card(
-          margin: EdgeInsets.all(15),
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(20),
-            child: cardContent(context),
-          ),
+  Widget smartMainWidget() {
+    return LayoutBuilder(
+      builder: (ctx, constraints) {
+        if (constraints.maxWidth < 1000) {
+          return oneColumnLayout();
+        } else {
+          return twoColumnLayout();
+        }
+      },
+    );
+  }
+
+  Widget oneColumnLayout() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(15),
+      child: Column(
+        children: <Widget>[
+          inputWidget(maxWidth: double.infinity),
+        ],
+      ),
+    );
+  }
+
+  Widget twoColumnLayout() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          inputWidget(),
+        ],
+      ),
+    );
+  }
+
+  Widget inputWidget({double maxWidth = 500}) {
+    return Container(
+      alignment: Alignment.topCenter,
+      constraints: BoxConstraints(
+        maxWidth: maxWidth,
+      ),
+      child: Card(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: inputCardContent(),
         ),
       ),
     );
   }
 
-  Widget cardContent(BuildContext context) {
+  Widget inputCardContent() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
+      children: [
         // First row - Recited/Read
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
+          children: [
             Container(
               alignment: Alignment.centerRight,
               constraints: BoxConstraints(minWidth: 120),
@@ -313,11 +363,7 @@ class _CardInterfaceState extends State<CardInterface> {
                 dense: true,
                 value: VerseLocation.before,
                 groupValue: _verseLocation,
-                onChanged: (VerseLocation value) {
-                  setState(() {
-                    _verseLocation = value;
-                  });
-                },
+                onChanged: beforeOrAfterOnChanged(),
               ),
             ),
             Flexible(
@@ -327,11 +373,7 @@ class _CardInterfaceState extends State<CardInterface> {
                 dense: true,
                 value: VerseLocation.after,
                 groupValue: _verseLocation,
-                onChanged: (VerseLocation value) {
-                  setState(() {
-                    _verseLocation = value;
-                  });
-                },
+                onChanged: beforeOrAfterOnChanged(),
               ),
             ),
           ],
