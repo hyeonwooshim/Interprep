@@ -9,6 +9,8 @@ import 'package:interprep/services/formatter/two_line_format.dart';
 import 'services/bible/korean_bible.dart';
 import 'services/bible/nkjv_bible.dart';
 
+import 'dart:js' as js;
+
 void main() => runApp(Interprep());
 
 class Interprep extends StatelessWidget {
@@ -155,7 +157,12 @@ class _CardInterfaceState extends State<CardInterface> {
   void copyVerse() {
     final str = fetchVersesToCopy();
     if (str == null) return;
-    Clipboard.setData(ClipboardData(text: str));
+
+    if (_verseStatus == VerseStatus.read) {
+      js.context.callMethod('copyToClip', [str]);
+    } else {
+      Clipboard.setData(ClipboardData(text: str));
+    }
   }
 
   String fetchVersesToCopy() {
@@ -172,11 +179,18 @@ class _CardInterfaceState extends State<CardInterface> {
     String str;
     if (_verseStatus == VerseStatus.recited) {
       final locationFirst = _verseLocation == VerseLocation.before;
-      str = TwoLineFormat().formatPassagePair(korean, nkjv,
-          locationFirst: locationFirst, useAbbreviation1: true);
+      str = TwoLineFormat().formatPassagePair(
+        korean,
+        nkjv,
+        locationFirst: locationFirst,
+        useAbbreviation1: true,
+      );
     } else {
-      str = TwoColumnFormat()
-          .formatPassagePair(korean, nkjv, useAbbreviation1: true);
+      str = TwoColumnFormat().formatPassagePair(
+        korean,
+        nkjv,
+        useAbbreviation1: true,
+      );
     }
     return str;
   }
