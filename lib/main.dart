@@ -62,8 +62,16 @@ class _CardInterfaceState extends State<CardInterface> {
   int _currentEndVerse;
 
   TypeAheadField<String> bookNameField;
-  final TextEditingController _bookNameFieldController =
-      TextEditingController();
+
+  final _bookNameFocusNode = FocusNode();
+  final _chapterFocusNode = FocusNode();
+  final _startVerseFocusNode = FocusNode();
+  final _endVerseFocusNode = FocusNode();
+
+  final _bookNameEditController = TextEditingController();
+  final _chapterEditController = TextEditingController();
+  final _startVerseEditController = TextEditingController();
+  final _endVerseEditController = TextEditingController();
 
   void initState() {
     super.initState();
@@ -72,12 +80,13 @@ class _CardInterfaceState extends State<CardInterface> {
       BibleSource.loadNkjvBible(context),
     ]);
 
-    _bookNameFieldController.addListener(() {
-      setState(() => _currentBook = _bookNameFieldController.text);
+    _bookNameEditController.addListener(() {
+      setState(() => _currentBook = _bookNameEditController.text);
     });
     bookNameField = TypeAheadField<String>(
       textFieldConfiguration: TextFieldConfiguration(
-        controller: _bookNameFieldController,
+        focusNode: _bookNameFocusNode,
+        controller: _bookNameEditController,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: 'Book Name',
@@ -103,7 +112,7 @@ class _CardInterfaceState extends State<CardInterface> {
         return Listener(
           child: ListTile(title: Text(suggestion)),
           onPointerUp: (_) {
-            _bookNameFieldController.text = suggestion;
+            _bookNameEditController.text = suggestion;
           },
         );
       },
@@ -112,6 +121,25 @@ class _CardInterfaceState extends State<CardInterface> {
       hideOnError: true,
       hideOnLoading: true,
     );
+
+    listenToSelectAllOnFocus(_bookNameFocusNode, _bookNameEditController);
+    listenToSelectAllOnFocus(_chapterFocusNode, _chapterEditController);
+    listenToSelectAllOnFocus(_startVerseFocusNode, _startVerseEditController);
+    listenToSelectAllOnFocus(_endVerseFocusNode, _endVerseEditController);
+  }
+
+  void listenToSelectAllOnFocus(
+    FocusNode focusNode,
+    TextEditingController textController,
+  ) {
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        textController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: textController.text.length,
+        );
+      }
+    });
   }
 
   void copyVerse() {
@@ -402,6 +430,8 @@ class _CardInterfaceState extends State<CardInterface> {
 
   Widget chapterTextField() {
     return TextField(
+      focusNode: _chapterFocusNode,
+      controller: _chapterEditController,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         labelText: 'Chapter',
@@ -421,6 +451,8 @@ class _CardInterfaceState extends State<CardInterface> {
 
   Widget startVerseTextField() {
     return TextField(
+      focusNode: _startVerseFocusNode,
+      controller: _startVerseEditController,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         labelText: 'Start Verse',
@@ -440,6 +472,8 @@ class _CardInterfaceState extends State<CardInterface> {
 
   Widget endVerseTextField() {
     return TextField(
+      focusNode: _endVerseFocusNode,
+      controller: _endVerseEditController,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         labelText: 'End Verse',
@@ -461,7 +495,16 @@ class _CardInterfaceState extends State<CardInterface> {
   void dispose() {
     // Clean up the controller when the widget is removed from the
     // widget tree.
-    _bookNameFieldController.dispose();
+    _bookNameEditController.dispose();
+    _chapterEditController.dispose();
+    _startVerseEditController.dispose();
+    _endVerseEditController.dispose();
+
+    _bookNameFocusNode.dispose();
+    _chapterFocusNode.dispose();
+    _startVerseFocusNode.dispose();
+    _endVerseFocusNode.dispose();
+
     super.dispose();
   }
 }
