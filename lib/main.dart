@@ -262,42 +262,30 @@ class _CardInterfaceState extends State<CardInterface> {
             ),
             Flexible(
               flex: 2,
-              child: Row(
-                children: <Widget>[
-                  Radio(
-                    value: VerseStatus.recited,
-                    groupValue: _verseStatus,
-                    onChanged: (VerseStatus value) {
-                      setState(() {
-                        _verseStatus = value;
-                      });
-                    },
-                  ),
-                  Text(
-                    'Recited',
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: RadioListTile<VerseStatus>(
+                title: Text('Recited'),
+                dense: true,
+                value: VerseStatus.recited,
+                groupValue: _verseStatus,
+                onChanged: (VerseStatus value) {
+                  setState(() {
+                    _verseStatus = value;
+                  });
+                },
               ),
             ),
             Flexible(
               flex: 2,
-              child: Row(
-                children: <Widget>[
-                  Radio(
-                    value: VerseStatus.read,
-                    groupValue: _verseStatus,
-                    onChanged: (VerseStatus value) {
-                      setState(() {
-                        _verseStatus = value;
-                      });
-                    },
-                  ),
-                  Text(
-                    'Read',
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: RadioListTile<VerseStatus>(
+                title: Text('Read'),
+                dense: true,
+                value: VerseStatus.read,
+                groupValue: _verseStatus,
+                onChanged: (VerseStatus value) {
+                  setState(() {
+                    _verseStatus = value;
+                  });
+                },
               ),
             ),
           ],
@@ -320,42 +308,30 @@ class _CardInterfaceState extends State<CardInterface> {
             ),
             Flexible(
               flex: 2,
-              child: Row(
-                children: <Widget>[
-                  Radio(
-                    value: VerseLocation.before,
-                    groupValue: _verseLocation,
-                    onChanged: (VerseLocation value) {
-                      setState(() {
-                        _verseLocation = value;
-                      });
-                    },
-                  ),
-                  Text(
-                    'Before',
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: RadioListTile<VerseLocation>(
+                title: Text('Before'),
+                dense: true,
+                value: VerseLocation.before,
+                groupValue: _verseLocation,
+                onChanged: (VerseLocation value) {
+                  setState(() {
+                    _verseLocation = value;
+                  });
+                },
               ),
             ),
             Flexible(
               flex: 2,
-              child: Row(
-                children: <Widget>[
-                  Radio(
-                    value: VerseLocation.after,
-                    groupValue: _verseLocation,
-                    onChanged: (VerseLocation value) {
-                      setState(() {
-                        _verseLocation = value;
-                      });
-                    },
-                  ),
-                  Text(
-                    'After',
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: RadioListTile<VerseLocation>(
+                title: Text('After'),
+                dense: true,
+                value: VerseLocation.after,
+                groupValue: _verseLocation,
+                onChanged: (VerseLocation value) {
+                  setState(() {
+                    _verseLocation = value;
+                  });
+                },
               ),
             ),
           ],
