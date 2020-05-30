@@ -17,7 +17,6 @@ class Interprep extends StatelessWidget {
     return MaterialApp(
       title: "Interprep",
       home: Scaffold(
-        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text("Interprep"),
           centerTitle: true,
