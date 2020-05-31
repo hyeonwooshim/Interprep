@@ -179,6 +179,11 @@ class _CardInterfaceState extends State<CardInterface> {
     } else {
       Clipboard.setData(ClipboardData(text: str));
     }
+
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text('Passage copied!'),
+      duration: Duration(seconds: 1),
+    ));
   }
 
   String fetchVersesToCopy() {
@@ -469,7 +474,6 @@ class _CardInterfaceState extends State<CardInterface> {
           }
         });
       },
-      onSubmitted: (text) => copyVerse(),
     );
   }
 
@@ -491,7 +495,6 @@ class _CardInterfaceState extends State<CardInterface> {
           }
         });
       },
-      onSubmitted: (text) => copyVerse(),
     );
   }
 
@@ -513,7 +516,6 @@ class _CardInterfaceState extends State<CardInterface> {
           }
         });
       },
-      onSubmitted: (text) => copyVerse(),
     );
   }
 
