@@ -170,17 +170,6 @@ class _CardInterfaceState extends State<CardInterface> {
     });
   }
 
-  ValueChanged<VerseLocation> beforeOrAfterOnChanged() {
-    if (_verseStatus == VerseStatus.recited) {
-      return (VerseLocation value) {
-        setState(() {
-          _verseLocation = value;
-        });
-      };
-    }
-    return null;
-  }
-
   void copyVerse() {
     final str = fetchVersesToCopy();
     if (str == null) return;
