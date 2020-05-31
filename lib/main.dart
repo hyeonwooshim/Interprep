@@ -210,6 +210,7 @@ class _CardInterfaceState extends State<CardInterface> {
         korean,
         nkjv,
         locationFirst: locationFirst,
+        showVerseNums: _showVerseNumbers,
         useAbbreviation1: true,
       );
     } else {
