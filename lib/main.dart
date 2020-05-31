@@ -62,19 +62,20 @@ class _CardInterfaceState extends State<CardInterface> {
   int _currentStartVerse;
   int _currentEndVerse;
 
-  TypeAheadField<String> bookNameField;
+  TypeAheadField<String> _bookNameField;
 
-  final _keyboardListenerFocusNode = FocusNode();
+  FocusNode _keyboardListenerFocusNode;
+  Function _keyboardFocusChangedListener;
 
-  final _bookNameFocusNode = FocusNode();
-  final _chapterFocusNode = FocusNode();
-  final _startVerseFocusNode = FocusNode();
-  final _endVerseFocusNode = FocusNode();
+  FocusNode _bookNameFocusNode;
+  FocusNode _chapterFocusNode;
+  FocusNode _startVerseFocusNode;
+  FocusNode _endVerseFocusNode;
 
-  final _bookNameEditController = TextEditingController();
-  final _chapterEditController = TextEditingController();
-  final _startVerseEditController = TextEditingController();
-  final _endVerseEditController = TextEditingController();
+  TextEditingController _bookNameEditController;
+  TextEditingController _chapterEditController;
+  TextEditingController _startVerseEditController;
+  TextEditingController _endVerseEditController;
 
   void initState() {
     super.initState();
@@ -83,10 +84,31 @@ class _CardInterfaceState extends State<CardInterface> {
       BibleSource.loadNkjvBible(context),
     ]);
 
+    _keyboardListenerFocusNode = FocusNode();
+    // Adding this listener ensures that the RawKeyboardListener
+    // constantly listens for keyboard inputs. Probably will need
+    // to change this if we start putting in more inputs.
+    _keyboardFocusChangedListener = () {
+      if (!_keyboardListenerFocusNode.hasFocus) {
+        _keyboardListenerFocusNode.requestFocus();
+      }
+    };
+    _keyboardListenerFocusNode.addListener(_keyboardFocusChangedListener);
+
+    _bookNameFocusNode = FocusNode();
+    _chapterFocusNode = FocusNode();
+    _startVerseFocusNode = FocusNode();
+    _endVerseFocusNode = FocusNode();
+
+    _bookNameEditController = TextEditingController();
+    _chapterEditController = TextEditingController();
+    _startVerseEditController = TextEditingController();
+    _endVerseEditController = TextEditingController();
+
     _bookNameEditController.addListener(() {
       setState(() => _currentBook = _bookNameEditController.text);
     });
-    bookNameField = TypeAheadField<String>(
+    _bookNameField = TypeAheadField<String>(
       textFieldConfiguration: TextFieldConfiguration(
         focusNode: _bookNameFocusNode,
         controller: _bookNameEditController,
@@ -309,7 +331,8 @@ class _CardInterfaceState extends State<CardInterface> {
         ),
         onKey: (event) {
           if (event.runtimeType != RawKeyDownEvent) return;
-          if (event.logicalKey != LogicalKeyboardKey.enter) return;
+          if (event.logicalKey != LogicalKeyboardKey.enter &&
+              event.logicalKey != LogicalKeyboardKey.backquote) return;
           copyVerse();
         },
       ),
@@ -412,7 +435,7 @@ class _CardInterfaceState extends State<CardInterface> {
             Flexible(
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 10),
-                child: bookNameField,
+                child: _bookNameField,
               ),
             ),
           ],
@@ -540,19 +563,18 @@ class _CardInterfaceState extends State<CardInterface> {
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    _bookNameEditController.dispose();
-    _chapterEditController.dispose();
-    _startVerseEditController.dispose();
-    _endVerseEditController.dispose();
+    _keyboardListenerFocusNode.removeListener(_keyboardFocusChangedListener);
+    _keyboardListenerFocusNode.dispose();
 
     _bookNameFocusNode.dispose();
     _chapterFocusNode.dispose();
     _startVerseFocusNode.dispose();
     _endVerseFocusNode.dispose();
 
-    _keyboardListenerFocusNode.dispose();
+    _bookNameEditController.dispose();
+    _chapterEditController.dispose();
+    _startVerseEditController.dispose();
+    _endVerseEditController.dispose();
 
     super.dispose();
   }
