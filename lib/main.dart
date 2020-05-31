@@ -57,6 +57,7 @@ class _CardInterfaceState extends State<CardInterface> {
 
   VerseStatus _verseStatus = VerseStatus.recited;
   VerseLocation _verseLocation = VerseLocation.before;
+  bool _showVerseNumbers = false;
   String _currentBook = '';
   int _currentChapter;
   int _currentStartVerse;
@@ -209,6 +210,7 @@ class _CardInterfaceState extends State<CardInterface> {
         korean,
         nkjv,
         locationFirst: locationFirst,
+        showVerseNums: _showVerseNumbers,
         useAbbreviation1: true,
       );
     } else {
@@ -344,91 +346,10 @@ class _CardInterfaceState extends State<CardInterface> {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // First row - Recited/Read
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              alignment: Alignment.centerRight,
-              constraints: BoxConstraints(minWidth: 120),
-              child: Text(
-                'Recited/Read:',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Flexible(
-              flex: 2,
-              child: RadioListTile<VerseStatus>(
-                title: Text('Recited'),
-                dense: true,
-                value: VerseStatus.recited,
-                groupValue: _verseStatus,
-                onChanged: (VerseStatus value) {
-                  setState(() {
-                    _verseStatus = value;
-                  });
-                },
-              ),
-            ),
-            Flexible(
-              flex: 2,
-              child: RadioListTile<VerseStatus>(
-                title: Text('Read'),
-                dense: true,
-                value: VerseStatus.read,
-                groupValue: _verseStatus,
-                onChanged: (VerseStatus value) {
-                  setState(() {
-                    _verseStatus = value;
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
-        // Second row - Before/After
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              alignment: Alignment.centerRight,
-              constraints: BoxConstraints(minWidth: 120),
-              child: Text(
-                'Before/After:',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Flexible(
-              flex: 2,
-              child: RadioListTile<VerseLocation>(
-                title: Text('Before'),
-                dense: true,
-                value: VerseLocation.before,
-                groupValue: _verseLocation,
-                onChanged: beforeOrAfterOnChanged(),
-              ),
-            ),
-            Flexible(
-              flex: 2,
-              child: RadioListTile<VerseLocation>(
-                title: Text('After'),
-                dense: true,
-                value: VerseLocation.after,
-                groupValue: _verseLocation,
-                onChanged: beforeOrAfterOnChanged(),
-              ),
-            ),
-          ],
-        ),
-        // Third row - Book name
+        recitedOrReadSetting(),
+        beforeOrAfterSetting(),
+        showVerseNumbersSetting(),
+        // Book name
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -440,7 +361,7 @@ class _CardInterfaceState extends State<CardInterface> {
             ),
           ],
         ),
-        // Fourth row - verse location
+        // Verse location input
         Container(
           padding: EdgeInsets.symmetric(vertical: 10),
           child: Row(
@@ -472,7 +393,7 @@ class _CardInterfaceState extends State<CardInterface> {
             ],
           ),
         ),
-        // Fifth row - submit
+        //  Submit button
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -492,6 +413,52 @@ class _CardInterfaceState extends State<CardInterface> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget recitedOrReadSetting() {
+    ValueChanged<bool> onChanged = (v) {
+      setState(() {
+        _verseStatus = v ? VerseStatus.read : VerseStatus.recited;
+      });
+    };
+    return SwitchListTile(
+      title: Text('Recited / Read'),
+      value: _verseStatus == VerseStatus.read,
+      onChanged: onChanged,
+      dense: true,
+    );
+  }
+
+  Widget beforeOrAfterSetting() {
+    ValueChanged<bool> onChanged;
+    if (_verseStatus != VerseStatus.read) {
+      onChanged = (v) {
+        setState(() {
+          _verseLocation = v ? VerseLocation.after : VerseLocation.before;
+        });
+      };
+    }
+    return SwitchListTile(
+      title: Text('Before / After'),
+      value: _verseLocation == VerseLocation.after,
+      onChanged: onChanged,
+      dense: true,
+    );
+  }
+
+  Widget showVerseNumbersSetting() {
+    ValueChanged<bool> onChanged;
+    if (_verseStatus != VerseStatus.read) {
+      onChanged = (v) {
+        setState(() => _showVerseNumbers = v);
+      };
+    }
+    return SwitchListTile(
+      title: Text('Show Verse Numbers'),
+      value: _showVerseNumbers,
+      onChanged: onChanged,
+      dense: true,
     );
   }
 
