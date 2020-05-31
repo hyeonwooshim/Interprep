@@ -64,6 +64,8 @@ class _CardInterfaceState extends State<CardInterface> {
 
   TypeAheadField<String> bookNameField;
 
+  final _keyboardListenerFocusNode = FocusNode();
+
   final _bookNameFocusNode = FocusNode();
   final _chapterFocusNode = FocusNode();
   final _startVerseFocusNode = FocusNode();
@@ -296,11 +298,20 @@ class _CardInterfaceState extends State<CardInterface> {
       constraints: BoxConstraints(
         maxWidth: maxWidth,
       ),
-      child: Card(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
-          child: inputCardContent(),
+      child: RawKeyboardListener(
+        autofocus: true,
+        focusNode: _keyboardListenerFocusNode,
+        child: Card(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(20),
+            child: inputCardContent(),
+          ),
         ),
+        onKey: (event) {
+          if (event.runtimeType != RawKeyDownEvent) return;
+          if (event.logicalKey != LogicalKeyboardKey.enter) return;
+          copyVerse();
+        },
       ),
     );
   }
@@ -479,6 +490,7 @@ class _CardInterfaceState extends State<CardInterface> {
           }
         });
       },
+      onSubmitted: (text) => copyVerse(),
     );
   }
 
@@ -500,6 +512,7 @@ class _CardInterfaceState extends State<CardInterface> {
           }
         });
       },
+      onSubmitted: (text) => copyVerse(),
     );
   }
 
@@ -521,6 +534,7 @@ class _CardInterfaceState extends State<CardInterface> {
           }
         });
       },
+      onSubmitted: (text) => copyVerse(),
     );
   }
 
@@ -537,6 +551,8 @@ class _CardInterfaceState extends State<CardInterface> {
     _chapterFocusNode.dispose();
     _startVerseFocusNode.dispose();
     _endVerseFocusNode.dispose();
+
+    _keyboardListenerFocusNode.dispose();
 
     super.dispose();
   }
