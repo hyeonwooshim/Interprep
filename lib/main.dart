@@ -63,8 +63,6 @@ class _CardInterfaceState extends State<CardInterface> {
   int _currentStartVerse;
   int _currentEndVerse;
 
-  TypeAheadField<String> _bookNameField;
-
   FocusNode _keyboardListenerFocusNode;
   Function _keyboardFocusChangedListener;
 
@@ -109,46 +107,6 @@ class _CardInterfaceState extends State<CardInterface> {
     _bookNameEditController.addListener(() {
       setState(() => _currentBook = _bookNameEditController.text);
     });
-    _bookNameField = TypeAheadField<String>(
-      textFieldConfiguration: TextFieldConfiguration(
-        focusNode: _bookNameFocusNode,
-        controller: _bookNameEditController,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Book Name',
-          isDense: true,
-        ),
-      ),
-      suggestionsCallback: (pattern) async {
-        final whitespace = new RegExp(r"\s+\b|\b\s|\s|\b");
-        pattern = pattern.replaceAll(whitespace, "");
-        if (pattern.isEmpty) return [];
-
-        final candidates = suggestions.where((b) {
-          b = b.replaceAll(whitespace, "");
-          return b.toLowerCase().startsWith(pattern.toLowerCase());
-        });
-        if (candidates.isNotEmpty) return candidates;
-        return suggestions.where((b) {
-          b = b.replaceAll(whitespace, "");
-          return b.toLowerCase().contains(pattern.toLowerCase());
-        });
-      },
-      itemBuilder: (context, suggestion) {
-        return Listener(
-          child: ListTile(title: Text(suggestion)),
-          onPointerUp: (_) {
-            _bookNameEditController.text = suggestion;
-          },
-        );
-      },
-      onSuggestionSelected: (_) {},
-      hideOnEmpty: true,
-      hideOnError: true,
-      hideOnLoading: true,
-      // Disables animation.
-      transitionBuilder: (_, suggestionsBox, __) => suggestionsBox,
-    );
 
     listenToSelectAllOnFocus(_bookNameFocusNode, _bookNameEditController);
     listenToSelectAllOnFocus(_chapterFocusNode, _chapterEditController);
@@ -240,6 +198,15 @@ class _CardInterfaceState extends State<CardInterface> {
     if (Passage.validatePassage(koreanBible, v1, v2) != null) return null;
 
     return () => copyVerse();
+  }
+
+  String searchBookMatch() {
+    if (_currentBook.isEmpty) return null;
+    int book = koreanBible.getBookIndex(_currentBook);
+    if (book != -1) return koreanBible.bookNames[book];
+    book = nkjvBible.getBookIndex(_currentBook);
+    if (book != -1) return nkjvBible.bookNames[book];
+    return null;
   }
 
   @override
@@ -450,7 +417,69 @@ class _CardInterfaceState extends State<CardInterface> {
   }
 
   Widget bookNameField() {
-    return _bookNameField;
+    final useSuggestions = false;
+    if (useSuggestions) {
+      return autocompleteBookNameField();
+    } else {
+      return previewBookNameField();
+    }
+  }
+
+  Widget previewBookNameField() {
+    final matchedName = searchBookMatch();
+    final displayText = matchedName ?? 'Book Name';
+    return TextField(
+      focusNode: _bookNameFocusNode,
+      controller: _bookNameEditController,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: displayText,
+        isDense: true,
+      ),
+    );
+  }
+
+  Widget autocompleteBookNameField() {
+    return TypeAheadField<String>(
+      textFieldConfiguration: TextFieldConfiguration(
+        focusNode: _bookNameFocusNode,
+        controller: _bookNameEditController,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Book Name',
+          isDense: true,
+        ),
+      ),
+      suggestionsCallback: (pattern) async {
+        final whitespace = new RegExp(r"\s+\b|\b\s|\s|\b");
+        pattern = pattern.replaceAll(whitespace, "");
+        if (pattern.isEmpty) return [];
+
+        final candidates = suggestions.where((b) {
+          b = b.replaceAll(whitespace, "");
+          return b.toLowerCase().startsWith(pattern.toLowerCase());
+        });
+        if (candidates.isNotEmpty) return candidates;
+        return suggestions.where((b) {
+          b = b.replaceAll(whitespace, "");
+          return b.toLowerCase().contains(pattern.toLowerCase());
+        });
+      },
+      itemBuilder: (context, suggestion) {
+        return Listener(
+          child: ListTile(title: Text(suggestion)),
+          onPointerUp: (_) {
+            _bookNameEditController.text = suggestion;
+          },
+        );
+      },
+      onSuggestionSelected: (_) {},
+      hideOnEmpty: true,
+      hideOnError: true,
+      hideOnLoading: true,
+      // Disables animation.
+      transitionBuilder: (_, suggestionsBox, __) => suggestionsBox,
+    );
   }
 
   Widget chapterTextField() {
