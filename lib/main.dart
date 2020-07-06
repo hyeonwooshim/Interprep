@@ -170,17 +170,6 @@ class _CardInterfaceState extends State<CardInterface> {
     });
   }
 
-  ValueChanged<VerseLocation> beforeOrAfterOnChanged() {
-    if (_verseStatus == VerseStatus.recited) {
-      return (VerseLocation value) {
-        setState(() {
-          _verseLocation = value;
-        });
-      };
-    }
-    return null;
-  }
-
   void copyVerse() {
     final str = fetchVersesToCopy();
     if (str == null) return;
@@ -190,6 +179,11 @@ class _CardInterfaceState extends State<CardInterface> {
     } else {
       Clipboard.setData(ClipboardData(text: str));
     }
+
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text('Passage copied!'),
+      duration: Duration(seconds: 1),
+    ));
   }
 
   String fetchVersesToCopy() {
@@ -480,7 +474,6 @@ class _CardInterfaceState extends State<CardInterface> {
           }
         });
       },
-      onSubmitted: (text) => copyVerse(),
     );
   }
 
@@ -502,7 +495,6 @@ class _CardInterfaceState extends State<CardInterface> {
           }
         });
       },
-      onSubmitted: (text) => copyVerse(),
     );
   }
 
@@ -524,7 +516,6 @@ class _CardInterfaceState extends State<CardInterface> {
           }
         });
       },
-      onSubmitted: (text) => copyVerse(),
     );
   }
 
