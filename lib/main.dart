@@ -344,16 +344,9 @@ class _CardInterfaceState extends State<CardInterface> {
         beforeOrAfterSetting(),
         showVerseNumbersSetting(),
         // Book name
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Flexible(
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: _bookNameField,
-              ),
-            ),
-          ],
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: bookNameField(),
         ),
         // Verse location input
         Container(
@@ -454,6 +447,10 @@ class _CardInterfaceState extends State<CardInterface> {
       onChanged: onChanged,
       dense: true,
     );
+  }
+
+  Widget bookNameField() {
+    return _bookNameField;
   }
 
   Widget chapterTextField() {
