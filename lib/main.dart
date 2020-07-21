@@ -8,6 +8,7 @@ import 'package:interprep/services/formatter/two_column_format.dart';
 import 'package:interprep/services/formatter/two_line_format.dart';
 import 'services/bible/korean_bible.dart';
 import 'services/bible/nkjv_bible.dart';
+import 'services/about_source.dart';
 
 import 'dart:js' as js;
 
@@ -18,24 +19,80 @@ class Interprep extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Interprep",
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Interprep"),
-          centerTitle: true,
-          backgroundColor: Colors.brown[300],
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.book,
-                color: Colors.white,
-              ),
-              onPressed: null,
-            ),
-          ],
-        ),
-        body: CardInterface(),
-      ),
+      home: MainRouter(),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class MainRouter extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Interprep"),
+        centerTitle: true,
+        backgroundColor: Colors.brown[300],
+        actions: <Widget>[
+          FlatButton(
+            textColor: Colors.white,
+            child: Text("About", style: TextStyle(fontWeight: FontWeight.bold)),
+            shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AboutInterface()));
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.book,
+              color: Colors.white,
+            ),
+            onPressed: null,
+          ),
+        ],
+      ),
+      body: CardInterface(),
+    );
+  }
+}
+
+class AboutInterface extends StatelessWidget {
+  final List<Widget> aboutInfoText = AboutInfo.aboutInfo
+      .map((str) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: (str[0] == '@')
+                ? new Text(str, style: TextStyle(fontWeight: FontWeight.bold))
+                : new Text(str),
+          ))
+      .toList();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("About"),
+        centerTitle: true,
+        backgroundColor: Colors.brown[300],
+      ),
+      body: Container(
+        alignment: Alignment.topCenter,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: 1000,
+          ),
+          child: Card(
+            margin: EdgeInsets.all(15),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: aboutInfoText,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
