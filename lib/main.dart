@@ -59,16 +59,16 @@ class MainRouter extends StatelessWidget {
 
 List<String> aboutInfo = AboutInfo.aboutInfo;
 
-List<Widget> widgets = aboutInfo
-    .map((str) => Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: (str[0] == '@')
-              ? new Text(str, style: TextStyle(fontWeight: FontWeight.bold))
-              : new Text(str),
-        ))
-    .toList();
-
 class AboutInterface extends StatelessWidget {
+  final List<Widget> aboutInfoText = aboutInfo
+      .map((str) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: (str[0] == '@')
+                ? new Text(str, style: TextStyle(fontWeight: FontWeight.bold))
+                : new Text(str),
+          ))
+      .toList();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +89,7 @@ class AboutInterface extends StatelessWidget {
               padding: EdgeInsets.all(15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: widgets,
+                children: aboutInfoText,
               ),
             ),
           ),
