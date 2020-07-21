@@ -57,10 +57,8 @@ class MainRouter extends StatelessWidget {
   }
 }
 
-List<String> aboutInfo = AboutInfo.aboutInfo;
-
 class AboutInterface extends StatelessWidget {
-  final List<Widget> aboutInfoText = aboutInfo
+  final List<Widget> aboutInfoText = AboutInfo.aboutInfo
       .map((str) => Padding(
             padding: const EdgeInsets.all(8.0),
             child: (str[0] == '@')
