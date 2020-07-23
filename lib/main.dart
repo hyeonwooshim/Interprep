@@ -433,11 +433,19 @@ class _CardInterfaceState extends State<CardInterface> {
         _verseStatus = v ? VerseStatus.read : VerseStatus.recited;
       });
     };
-    return SwitchListTile(
-      title: Text('Recited / Read'),
-      value: _verseStatus == VerseStatus.read,
-      onChanged: onChanged,
-      dense: true,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Text("Recited"),
+        Switch(
+          value: _verseStatus == VerseStatus.read,
+          onChanged: onChanged,
+          inactiveTrackColor: Colors.grey[500],
+          activeColor: Colors.white,
+          activeTrackColor: Colors.grey[500],
+        ),
+        Text("Read"),
+      ],
     );
   }
 
@@ -450,11 +458,36 @@ class _CardInterfaceState extends State<CardInterface> {
         });
       };
     }
-    return SwitchListTile(
-      title: Text('Before / After'),
-      value: _verseLocation == VerseLocation.after,
-      onChanged: onChanged,
-      dense: true,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Text(
+          "Before",
+          style: TextStyle(
+            color: _verseStatus != VerseStatus.read
+                ? Colors.black
+                : Colors.black.withOpacity(0.3),
+          ),
+        ),
+        Switch(
+          value: _verseLocation == VerseLocation.after,
+          onChanged: onChanged,
+          inactiveThumbColor:
+              _verseStatus != VerseStatus.read ? Colors.white : null,
+          inactiveTrackColor:
+              _verseStatus != VerseStatus.read ? Colors.grey[500] : null,
+          activeColor: Colors.white,
+          activeTrackColor: Colors.grey[500],
+        ),
+        Text(
+          "After",
+          style: TextStyle(
+            color: _verseStatus != VerseStatus.read
+                ? Colors.black
+                : Colors.black.withOpacity(0.3),
+          ),
+        ),
+      ],
     );
   }
 
@@ -465,11 +498,39 @@ class _CardInterfaceState extends State<CardInterface> {
         setState(() => _showVerseNumbers = v);
       };
     }
-    return SwitchListTile(
-      title: Text('Show Verse Numbers'),
-      value: _showVerseNumbers,
-      onChanged: onChanged,
-      dense: true,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Container(
+          margin: EdgeInsets.only(right: 15.0, left: 20.0),
+          child: Text(
+            "Verse Numbers",
+            style: TextStyle(
+              color: _verseStatus != VerseStatus.read
+                  ? Colors.black
+                  : Colors.black.withOpacity(0.3),
+            ),
+          ),
+        ),
+        Switch(
+          value: _showVerseNumbers,
+          onChanged: onChanged,
+          inactiveThumbColor:
+              _verseStatus != VerseStatus.read ? Colors.white : null,
+          inactiveTrackColor:
+              _verseStatus != VerseStatus.read ? Colors.grey[500] : null,
+          activeColor: Colors.white,
+          activeTrackColor: Colors.grey[500],
+        ),
+        Text(
+          "No Verse Numbers",
+          style: TextStyle(
+            color: _verseStatus != VerseStatus.read
+                ? Colors.black
+                : Colors.black.withOpacity(0.3),
+          ),
+        ),
+      ],
     );
   }
 
