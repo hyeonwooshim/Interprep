@@ -432,10 +432,6 @@ class _CardInterfaceState extends State<CardInterface> {
     return _verseStatus == VerseStatus.read;
   }
 
-  double getTextFieldMaxWidth() {
-    return 120.0;
-  }
-
   Widget recitedOrReadSetting() {
     ValueChanged<bool> onChanged = (v) {
       setState(() {
@@ -443,33 +439,24 @@ class _CardInterfaceState extends State<CardInterface> {
       });
     };
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: Container(
-            width: getTextFieldMaxWidth(),
-            child: Text(
-              "Recited",
-              textAlign: TextAlign.center,
-            ),
+          child: Text(
+            "Recited",
+            textAlign: TextAlign.center,
           ),
         ),
-        Container(
-          child: Switch(
-            value: _verseStatus == VerseStatus.read,
-            onChanged: onChanged,
-            inactiveTrackColor: Colors.grey[500],
-            activeColor: Colors.white,
-            activeTrackColor: Colors.grey[500],
-          ),
+        Switch(
+          value: _verseStatus == VerseStatus.read,
+          onChanged: onChanged,
+          inactiveTrackColor: Colors.grey[500],
+          activeColor: Colors.white,
+          activeTrackColor: Colors.grey[500],
         ),
         Expanded(
-          child: Container(
-            width: getTextFieldMaxWidth(),
-            child: Text(
-              "Read",
-              textAlign: TextAlign.center,
-            ),
+          child: Text(
+            "Read",
+            textAlign: TextAlign.center,
           ),
         ),
       ],
@@ -486,43 +473,32 @@ class _CardInterfaceState extends State<CardInterface> {
       };
     }
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: Container(
-            width: getTextFieldMaxWidth(),
-            child: Text(
-              "Before",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: !inReadMode()
-                    ? Colors.black
-                    : Colors.black.withOpacity(0.3),
-              ),
+          child: Text(
+            "Before",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color:
+                  !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
             ),
           ),
         ),
-        Container(
-          child: Switch(
-            value: _verseLocation == VerseLocation.after,
-            onChanged: onChanged,
-            inactiveThumbColor: !inReadMode() ? Colors.white : null,
-            inactiveTrackColor: !inReadMode() ? Colors.grey[500] : null,
-            activeColor: Colors.white,
-            activeTrackColor: Colors.grey[500],
-          ),
+        Switch(
+          value: _verseLocation == VerseLocation.after,
+          onChanged: onChanged,
+          inactiveThumbColor: !inReadMode() ? Colors.white : null,
+          inactiveTrackColor: !inReadMode() ? Colors.grey[500] : null,
+          activeColor: Colors.white,
+          activeTrackColor: Colors.grey[500],
         ),
         Expanded(
-          child: Container(
-            width: getTextFieldMaxWidth(),
-            child: Text(
-              "After",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: !inReadMode()
-                    ? Colors.black
-                    : Colors.black.withOpacity(0.3),
-              ),
+          child: Text(
+            "After",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color:
+                  !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
             ),
           ),
         ),
@@ -538,43 +514,32 @@ class _CardInterfaceState extends State<CardInterface> {
       };
     }
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: Container(
-            width: getTextFieldMaxWidth(),
-            child: Text(
-              "Verse Numbers",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: !inReadMode()
-                    ? Colors.black
-                    : Colors.black.withOpacity(0.3),
-              ),
+          child: Text(
+            "Verse Numbers",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color:
+                  !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
             ),
           ),
         ),
-        Container(
-          child: Switch(
-            value: _showVerseNumbers,
-            onChanged: onChanged,
-            inactiveThumbColor: !inReadMode() ? Colors.white : null,
-            inactiveTrackColor: !inReadMode() ? Colors.grey[500] : null,
-            activeColor: Colors.white,
-            activeTrackColor: Colors.grey[500],
-          ),
+        Switch(
+          value: _showVerseNumbers,
+          onChanged: onChanged,
+          inactiveThumbColor: !inReadMode() ? Colors.white : null,
+          inactiveTrackColor: !inReadMode() ? Colors.grey[500] : null,
+          activeColor: Colors.white,
+          activeTrackColor: Colors.grey[500],
         ),
         Expanded(
-          child: Container(
-            width: getTextFieldMaxWidth(),
-            child: Text(
-              "No Verse Numbers",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: !inReadMode()
-                    ? Colors.black
-                    : Colors.black.withOpacity(0.3),
-              ),
+          child: Text(
+            "No Verse Numbers",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color:
+                  !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
             ),
           ),
         ),
