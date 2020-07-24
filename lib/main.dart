@@ -427,49 +427,103 @@ class _CardInterfaceState extends State<CardInterface> {
     );
   }
 
+  bool inReadMode() {
+    return _verseStatus == VerseStatus.read;
+  }
+
   Widget recitedOrReadSetting() {
     ValueChanged<bool> onChanged = (v) {
       setState(() {
         _verseStatus = v ? VerseStatus.read : VerseStatus.recited;
       });
     };
-    return SwitchListTile(
-      title: Text('Recited / Read'),
-      value: _verseStatus == VerseStatus.read,
-      onChanged: onChanged,
-      dense: true,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Text("Recited"),
+        Switch(
+          value: _verseStatus == VerseStatus.read,
+          onChanged: onChanged,
+          inactiveTrackColor: Colors.grey[500],
+          activeColor: Colors.white,
+          activeTrackColor: Colors.grey[500],
+        ),
+        Text("Read"),
+      ],
     );
   }
 
   Widget beforeOrAfterSetting() {
     ValueChanged<bool> onChanged;
-    if (_verseStatus != VerseStatus.read) {
+    if (!inReadMode()) {
       onChanged = (v) {
         setState(() {
           _verseLocation = v ? VerseLocation.after : VerseLocation.before;
         });
       };
     }
-    return SwitchListTile(
-      title: Text('Before / After'),
-      value: _verseLocation == VerseLocation.after,
-      onChanged: onChanged,
-      dense: true,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Text(
+          "Before",
+          style: TextStyle(
+            color: !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+          ),
+        ),
+        Switch(
+          value: _verseLocation == VerseLocation.after,
+          onChanged: onChanged,
+          inactiveThumbColor: !inReadMode() ? Colors.white : null,
+          inactiveTrackColor: !inReadMode() ? Colors.grey[500] : null,
+          activeColor: Colors.white,
+          activeTrackColor: Colors.grey[500],
+        ),
+        Text(
+          "After",
+          style: TextStyle(
+            color: !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+          ),
+        ),
+      ],
     );
   }
 
   Widget showVerseNumbersSetting() {
     ValueChanged<bool> onChanged;
-    if (_verseStatus != VerseStatus.read) {
+    if (!inReadMode()) {
       onChanged = (v) {
         setState(() => _showVerseNumbers = v);
       };
     }
-    return SwitchListTile(
-      title: Text('Show Verse Numbers'),
-      value: _showVerseNumbers,
-      onChanged: onChanged,
-      dense: true,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Container(
+          margin: EdgeInsets.only(right: 15.0, left: 20.0),
+          child: Text(
+            "Verse Numbers",
+            style: TextStyle(
+              color:
+                  !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+            ),
+          ),
+        ),
+        Switch(
+          value: _showVerseNumbers,
+          onChanged: onChanged,
+          inactiveThumbColor: !inReadMode() ? Colors.white : null,
+          inactiveTrackColor: !inReadMode() ? Colors.grey[500] : null,
+          activeColor: Colors.white,
+          activeTrackColor: Colors.grey[500],
+        ),
+        Text(
+          "No Verse Numbers",
+          style: TextStyle(
+            color: !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+          ),
+        ),
+      ],
     );
   }
 
