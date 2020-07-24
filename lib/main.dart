@@ -491,7 +491,7 @@ class _CardInterfaceState extends State<CardInterface> {
 
   Widget showVerseNumbersSetting() {
     ValueChanged<bool> onChanged;
-    if (_verseStatus != VerseStatus.read) {
+    if (!inReadMode()) {
       onChanged = (v) {
         setState(() => _showVerseNumbers = v);
       };
