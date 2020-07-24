@@ -427,6 +427,10 @@ class _CardInterfaceState extends State<CardInterface> {
     );
   }
 
+  bool inReadMode() {
+    return _verseStatus == VerseStatus.read;
+  }
+
   Widget recitedOrReadSetting() {
     ValueChanged<bool> onChanged = (v) {
       setState(() {
@@ -451,7 +455,7 @@ class _CardInterfaceState extends State<CardInterface> {
 
   Widget beforeOrAfterSetting() {
     ValueChanged<bool> onChanged;
-    if (_verseStatus != VerseStatus.read) {
+    if (!inReadMode()) {
       onChanged = (v) {
         setState(() {
           _verseLocation = v ? VerseLocation.after : VerseLocation.before;
@@ -464,27 +468,21 @@ class _CardInterfaceState extends State<CardInterface> {
         Text(
           "Before",
           style: TextStyle(
-            color: _verseStatus != VerseStatus.read
-                ? Colors.black
-                : Colors.black.withOpacity(0.3),
+            color: !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
           ),
         ),
         Switch(
           value: _verseLocation == VerseLocation.after,
           onChanged: onChanged,
-          inactiveThumbColor:
-              _verseStatus != VerseStatus.read ? Colors.white : null,
-          inactiveTrackColor:
-              _verseStatus != VerseStatus.read ? Colors.grey[500] : null,
+          inactiveThumbColor: !inReadMode() ? Colors.white : null,
+          inactiveTrackColor: !inReadMode() ? Colors.grey[500] : null,
           activeColor: Colors.white,
           activeTrackColor: Colors.grey[500],
         ),
         Text(
           "After",
           style: TextStyle(
-            color: _verseStatus != VerseStatus.read
-                ? Colors.black
-                : Colors.black.withOpacity(0.3),
+            color: !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
           ),
         ),
       ],
@@ -506,28 +504,23 @@ class _CardInterfaceState extends State<CardInterface> {
           child: Text(
             "Verse Numbers",
             style: TextStyle(
-              color: _verseStatus != VerseStatus.read
-                  ? Colors.black
-                  : Colors.black.withOpacity(0.3),
+              color:
+                  !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
             ),
           ),
         ),
         Switch(
           value: _showVerseNumbers,
           onChanged: onChanged,
-          inactiveThumbColor:
-              _verseStatus != VerseStatus.read ? Colors.white : null,
-          inactiveTrackColor:
-              _verseStatus != VerseStatus.read ? Colors.grey[500] : null,
+          inactiveThumbColor: !inReadMode() ? Colors.white : null,
+          inactiveTrackColor: !inReadMode() ? Colors.grey[500] : null,
           activeColor: Colors.white,
           activeTrackColor: Colors.grey[500],
         ),
         Text(
           "No Verse Numbers",
           style: TextStyle(
-            color: _verseStatus != VerseStatus.read
-                ? Colors.black
-                : Colors.black.withOpacity(0.3),
+            color: !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
           ),
         ),
       ],
