@@ -363,6 +363,7 @@ class _CardInterfaceState extends State<CardInterface> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         recitedOrReadSetting(),
         beforeOrAfterSetting(),
@@ -438,9 +439,13 @@ class _CardInterfaceState extends State<CardInterface> {
       });
     };
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Text("Recited"),
+        Expanded(
+          child: Text(
+            "Recited",
+            textAlign: TextAlign.center,
+          ),
+        ),
         Switch(
           value: _verseStatus == VerseStatus.read,
           onChanged: onChanged,
@@ -448,7 +453,12 @@ class _CardInterfaceState extends State<CardInterface> {
           activeColor: Colors.white,
           activeTrackColor: Colors.grey[500],
         ),
-        Text("Read"),
+        Expanded(
+          child: Text(
+            "Read",
+            textAlign: TextAlign.center,
+          ),
+        ),
       ],
     );
   }
@@ -463,12 +473,15 @@ class _CardInterfaceState extends State<CardInterface> {
       };
     }
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Text(
-          "Before",
-          style: TextStyle(
-            color: !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+        Expanded(
+          child: Text(
+            "Before",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color:
+                  !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+            ),
           ),
         ),
         Switch(
@@ -479,10 +492,14 @@ class _CardInterfaceState extends State<CardInterface> {
           activeColor: Colors.white,
           activeTrackColor: Colors.grey[500],
         ),
-        Text(
-          "After",
-          style: TextStyle(
-            color: !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+        Expanded(
+          child: Text(
+            "After",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color:
+                  !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+            ),
           ),
         ),
       ],
@@ -497,12 +514,11 @@ class _CardInterfaceState extends State<CardInterface> {
       };
     }
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Container(
-          margin: EdgeInsets.only(right: 15.0, left: 20.0),
+        Expanded(
           child: Text(
             "Verse Numbers",
+            textAlign: TextAlign.center,
             style: TextStyle(
               color:
                   !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
@@ -517,10 +533,14 @@ class _CardInterfaceState extends State<CardInterface> {
           activeColor: Colors.white,
           activeTrackColor: Colors.grey[500],
         ),
-        Text(
-          "No Verse Numbers",
-          style: TextStyle(
-            color: !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+        Expanded(
+          child: Text(
+            "No Verse Numbers",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color:
+                  !inReadMode() ? Colors.black : Colors.black.withOpacity(0.3),
+            ),
           ),
         ),
       ],
