@@ -517,7 +517,7 @@ class _CardInterfaceState extends State<CardInterface> {
       children: [
         Expanded(
           child: Text(
-            "Verse Numbers",
+            "No Verse #",
             textAlign: TextAlign.center,
             style: TextStyle(
               color:
@@ -535,7 +535,7 @@ class _CardInterfaceState extends State<CardInterface> {
         ),
         Expanded(
           child: Text(
-            "No Verse Numbers",
+            "Show Verse #",
             textAlign: TextAlign.center,
             style: TextStyle(
               color:
