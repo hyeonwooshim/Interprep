@@ -8,6 +8,7 @@ import 'package:interprep/services/formatter/two_column_format.dart';
 import 'package:interprep/services/formatter/two_line_format.dart';
 import 'services/bible/korean_bible.dart';
 import 'services/bible/nkjv_bible.dart';
+import 'services/bible/spanish_bible.dart';
 import 'services/about_source.dart';
 
 import 'dart:js' as js;
@@ -106,6 +107,7 @@ List<String> suggestions = KoreanBible.fullBookNames + NkjvBible.fullBookNames;
 
 enum VerseStatus { recited, read }
 enum VerseLocation { before, after }
+enum LanguageStatus { korEng, engSpan }
 
 class _CardInterfaceState extends State<CardInterface> {
   Future<List<dynamic>> bibleFetch;
@@ -114,6 +116,8 @@ class _CardInterfaceState extends State<CardInterface> {
 
   VerseStatus _verseStatus = VerseStatus.recited;
   VerseLocation _verseLocation = VerseLocation.before;
+  LanguageStatus _languageStatus = LanguageStatus.engSpan;
+
   bool _showVerseNumbers = false;
   String _currentBook = '';
   int _currentChapter;
@@ -138,6 +142,7 @@ class _CardInterfaceState extends State<CardInterface> {
     bibleFetch = Future.wait([
       BibleSource.loadKoreanBible(context),
       BibleSource.loadNkjvBible(context),
+      BibleSource.loadSpanBible(context),
     ]);
 
     _keyboardListenerFocusNode = FocusNode();
@@ -365,6 +370,7 @@ class _CardInterfaceState extends State<CardInterface> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        languageSetting(),
         recitedOrReadSetting(),
         beforeOrAfterSetting(),
         showVerseNumbersSetting(),
@@ -430,6 +436,48 @@ class _CardInterfaceState extends State<CardInterface> {
 
   bool inReadMode() {
     return _verseStatus == VerseStatus.read;
+  }
+
+  Widget languageSetting() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+              border: Border.all(
+                  color: _languageStatus == LanguageStatus.korEng
+                      ? Colors.black
+                      : Colors.grey)),
+          child: FlatButton(
+            textColor: Colors.black,
+            child: Text(
+              "Korean/English",
+            ),
+            onPressed: () {
+              _languageStatus = LanguageStatus.korEng;
+              print(_languageStatus);
+            },
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+              border: Border.all(
+                  color: _languageStatus == LanguageStatus.engSpan
+                      ? Colors.black
+                      : Colors.grey)),
+          child: FlatButton(
+            textColor: Colors.black,
+            child: Text(
+              "English/Spanish",
+            ),
+            onPressed: () {
+              _languageStatus = LanguageStatus.engSpan;
+              print(_languageStatus);
+            },
+          ),
+        )
+      ],
+    );
   }
 
   Widget recitedOrReadSetting() {
