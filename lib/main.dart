@@ -109,7 +109,7 @@ List<String> suggestions = KoreanBible.fullBookNames +
 
 enum VerseStatus { recited, read }
 enum VerseLocation { before, after }
-enum LanguageStatus { korEng, engSpan }
+enum LanguageStatus { korEng, korSpan, engSpan }
 
 class _CardInterfaceState extends State<CardInterface> {
   Future<List<dynamic>> bibleFetch;
@@ -223,8 +223,11 @@ class _CardInterfaceState extends State<CardInterface> {
     if (_languageStatus == LanguageStatus.korEng) {
       lang1 = Passage(koreanBible, v1, v2);
       lang2 = Passage(nkjvBible, v1, v2);
-    } else {
+    } else if (_languageStatus == LanguageStatus.engSpan) {
       lang1 = Passage(nkjvBible, v1, v2);
+      lang2 = Passage(spanishBible, v1, v2);
+    } else {
+      lang1 = Passage(koreanBible, v1, v2);
       lang2 = Passage(spanishBible, v1, v2);
     }
 
@@ -456,6 +459,16 @@ class _CardInterfaceState extends State<CardInterface> {
     return _verseStatus == VerseStatus.read;
   }
 
+  Widget languageText(LanguageStatus status) {
+    if (status == LanguageStatus.korEng) {
+      return Text("Korean / English");
+    } else if (status == LanguageStatus.korSpan) {
+      return Text("Korean / Spanish");
+    } else {
+      return Text("English / Spanish");
+    }
+  }
+
   Widget languageSetting() {
     return DropdownButton<LanguageStatus>(
       value: _languageStatus,
@@ -469,13 +482,14 @@ class _CardInterfaceState extends State<CardInterface> {
           _languageStatus = newStatus;
         });
       },
-      items: <LanguageStatus>[LanguageStatus.korEng, LanguageStatus.engSpan]
-          .map<DropdownMenuItem<LanguageStatus>>((LanguageStatus status) {
+      items: <LanguageStatus>[
+        LanguageStatus.korEng,
+        LanguageStatus.korSpan,
+        LanguageStatus.engSpan,
+      ].map<DropdownMenuItem<LanguageStatus>>((LanguageStatus status) {
         return DropdownMenuItem<LanguageStatus>(
           value: status,
-          child: status == LanguageStatus.korEng
-              ? Text('Korean / English')
-              : Text('English / Spanish'),
+          child: languageText(status),
         );
       }).toList(),
     );
