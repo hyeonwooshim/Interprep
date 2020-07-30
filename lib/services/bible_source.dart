@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'bible/spanish_bible.dart';
 import 'bible/korean_bible.dart';
 import 'bible/nkjv_bible.dart';
 
@@ -12,6 +13,11 @@ class BibleSource {
   static Future<NkjvBible> loadNkjvBible(BuildContext context) async {
     return readAsLines(context, 'assets/NKJVer.txt')
         .then((lines) => NkjvBible.fromLines(lines));
+  }
+
+  static Future<SpanishBible> loadSpanBible(BuildContext context) async {
+    return readAsLines(context, 'assets/spanVer.txt')
+        .then((lines) => SpanishBible.fromLines(lines));
   }
 
   static Future<List<String>> readAsLines(

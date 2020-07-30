@@ -8,6 +8,7 @@ import 'package:interprep/services/formatter/two_column_format.dart';
 import 'package:interprep/services/formatter/two_line_format.dart';
 import 'services/bible/korean_bible.dart';
 import 'services/bible/nkjv_bible.dart';
+import 'services/bible/spanish_bible.dart';
 import 'services/about_source.dart';
 
 import 'dart:js' as js;
@@ -102,18 +103,24 @@ class CardInterface extends StatefulWidget {
   _CardInterfaceState createState() => new _CardInterfaceState();
 }
 
-List<String> suggestions = KoreanBible.fullBookNames + NkjvBible.fullBookNames;
+List<String> suggestions = KoreanBible.fullBookNames +
+    NkjvBible.fullBookNames +
+    SpanishBible.fullBookNames;
 
 enum VerseStatus { recited, read }
 enum VerseLocation { before, after }
+enum LanguageStatus { korEng, korSpan, engSpan }
 
 class _CardInterfaceState extends State<CardInterface> {
   Future<List<dynamic>> bibleFetch;
   KoreanBible koreanBible;
   NkjvBible nkjvBible;
+  SpanishBible spanishBible;
 
   VerseStatus _verseStatus = VerseStatus.recited;
   VerseLocation _verseLocation = VerseLocation.before;
+  LanguageStatus _languageStatus = LanguageStatus.korEng;
+
   bool _showVerseNumbers = false;
   String _currentBook = '';
   int _currentChapter;
@@ -138,6 +145,7 @@ class _CardInterfaceState extends State<CardInterface> {
     bibleFetch = Future.wait([
       BibleSource.loadKoreanBible(context),
       BibleSource.loadNkjvBible(context),
+      BibleSource.loadSpanBible(context),
     ]);
 
     _keyboardListenerFocusNode = FocusNode();
@@ -209,23 +217,34 @@ class _CardInterfaceState extends State<CardInterface> {
 
     if (Passage.validatePassage(koreanBible, v1, v2) != null) return null;
 
-    final korean = Passage(koreanBible, v1, v2);
-    final nkjv = Passage(nkjvBible, v1, v2);
+    Passage lang1;
+    Passage lang2;
+
+    if (_languageStatus == LanguageStatus.korEng) {
+      lang1 = Passage(koreanBible, v1, v2);
+      lang2 = Passage(nkjvBible, v1, v2);
+    } else if (_languageStatus == LanguageStatus.engSpan) {
+      lang1 = Passage(nkjvBible, v1, v2);
+      lang2 = Passage(spanishBible, v1, v2);
+    } else {
+      lang1 = Passage(koreanBible, v1, v2);
+      lang2 = Passage(spanishBible, v1, v2);
+    }
 
     String str;
     if (_verseStatus == VerseStatus.recited) {
       final locationFirst = _verseLocation == VerseLocation.before;
       str = TwoLineFormat().formatPassagePair(
-        korean,
-        nkjv,
+        lang1,
+        lang2,
         locationFirst: locationFirst,
         showVerseNums: _showVerseNumbers,
         useAbbreviation1: true,
       );
     } else {
       str = TwoColumnFormat().formatPassagePair(
-        korean,
-        nkjv,
+        lang1,
+        lang2,
         useAbbreviation1: true,
       );
     }
@@ -235,6 +254,7 @@ class _CardInterfaceState extends State<CardInterface> {
   List<Verse> initVerses() {
     int book = koreanBible.getBookIndex(_currentBook);
     if (book == -1) book = nkjvBible.getBookIndex(_currentBook);
+    if (book == -1) book = spanishBible.getBookIndex(_currentBook);
     if (book == -1) return null;
 
     if (_currentChapter == null ||
@@ -263,6 +283,8 @@ class _CardInterfaceState extends State<CardInterface> {
     if (book != -1) return koreanBible.bookNames[book];
     book = nkjvBible.getBookIndex(_currentBook);
     if (book != -1) return nkjvBible.bookNames[book];
+    book = spanishBible.getBookIndex(_currentBook);
+    if (book != -1) return spanishBible.bookNames[book];
     return null;
   }
 
@@ -275,6 +297,7 @@ class _CardInterfaceState extends State<CardInterface> {
           if (snapshot.hasData) {
             koreanBible ??= snapshot.data[0];
             nkjvBible ??= snapshot.data[1];
+            spanishBible ??= snapshot.data[2];
             return smartMainWidget();
           }
         }
@@ -365,6 +388,10 @@ class _CardInterfaceState extends State<CardInterface> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        languageSetting(),
+        SizedBox(
+          height: 30,
+        ),
         recitedOrReadSetting(),
         beforeOrAfterSetting(),
         showVerseNumbersSetting(),
@@ -430,6 +457,42 @@ class _CardInterfaceState extends State<CardInterface> {
 
   bool inReadMode() {
     return _verseStatus == VerseStatus.read;
+  }
+
+  Widget languageText(LanguageStatus status) {
+    if (status == LanguageStatus.korEng) {
+      return Text("Korean / English");
+    } else if (status == LanguageStatus.korSpan) {
+      return Text("Korean / Spanish");
+    } else {
+      return Text("English / Spanish");
+    }
+  }
+
+  Widget languageSetting() {
+    return DropdownButton<LanguageStatus>(
+      value: _languageStatus,
+      icon: Icon(
+        Icons.language,
+      ),
+      isDense: true,
+      iconSize: 25,
+      onChanged: (LanguageStatus newStatus) {
+        setState(() {
+          _languageStatus = newStatus;
+        });
+      },
+      items: <LanguageStatus>[
+        LanguageStatus.korEng,
+        LanguageStatus.korSpan,
+        LanguageStatus.engSpan,
+      ].map<DropdownMenuItem<LanguageStatus>>((LanguageStatus status) {
+        return DropdownMenuItem<LanguageStatus>(
+          value: status,
+          child: languageText(status),
+        );
+      }).toList(),
+    );
   }
 
   Widget recitedOrReadSetting() {
