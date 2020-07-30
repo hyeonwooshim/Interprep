@@ -457,50 +457,27 @@ class _CardInterfaceState extends State<CardInterface> {
   }
 
   Widget languageSetting() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Flexible(
-          child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(
-                    width: 3.0,
-                    color: _languageStatus == LanguageStatus.korEng
-                        ? Colors.black
-                        : Colors.grey)),
-            child: FlatButton(
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              textColor: Colors.black,
-              child: Text(
-                "Korean/English",
-              ),
-              onPressed: () => setState(() {
-                _languageStatus = LanguageStatus.korEng;
-              }),
-            ),
-          ),
-        ),
-        Flexible(
-          child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(
-                    width: 3.0,
-                    color: _languageStatus == LanguageStatus.engSpan
-                        ? Colors.black
-                        : Colors.grey)),
-            child: FlatButton(
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              textColor: Colors.black,
-              child: Text(
-                "English/Spanish",
-              ),
-              onPressed: () => setState(() {
-                _languageStatus = LanguageStatus.engSpan;
-              }),
-            ),
-          ),
-        )
-      ],
+    return DropdownButton<LanguageStatus>(
+      value: _languageStatus,
+      icon: Icon(
+        Icons.language,
+      ),
+      isDense: true,
+      iconSize: 25,
+      onChanged: (LanguageStatus newStatus) {
+        setState(() {
+          _languageStatus = newStatus;
+        });
+      },
+      items: <LanguageStatus>[LanguageStatus.korEng, LanguageStatus.engSpan]
+          .map<DropdownMenuItem<LanguageStatus>>((LanguageStatus status) {
+        return DropdownMenuItem<LanguageStatus>(
+          value: status,
+          child: status == LanguageStatus.korEng
+              ? Text('Korean / English')
+              : Text('English / Spanish'),
+        );
+      }).toList(),
     );
   }
 

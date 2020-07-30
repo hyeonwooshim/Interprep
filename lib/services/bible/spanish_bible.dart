@@ -26,74 +26,15 @@ class SpanishBible extends Bible {
     return super.getBookIndex(book);
   }
 
-  static const shortBookNames = [
-    'Génesis',
-    'Éxodo',
-    'Levítico',
-    'Números',
-    'Deuteronomio',
-    'Josué',
-    'Jueces',
-    'Rut',
-    '1Samuel',
-    '2Samuel',
-    '1Reyes',
-    '2Reyes',
-    '1Crónicas',
-    '2Crónicas',
-    'Esdras',
-    'Nehemías',
-    'Ester',
-    'Job',
-    'Salmos',
-    'Proverbios',
-    'Eclesiastés',
-    'CantardelosCantares',
-    'Isaías',
-    'Jeremías',
-    'Lamentaciones',
-    'Ezequiel',
-    'Daniel',
-    'Oseas',
-    'Joel',
-    'Amós',
-    'Abdías',
-    'Jonás',
-    'Miqueas',
-    'Nahum',
-    'Habacuc',
-    'Sofonías',
-    'Hageo',
-    'Zacarías',
-    'Malaquías',
-    'Mateo',
-    'Marcos',
-    'Lucas',
-    'Juan',
-    'Hechos',
-    'Romanos',
-    '1Corintios',
-    '2Corintios',
-    'Gálatas',
-    'Efesios',
-    'Filipenses',
-    'Colosenses',
-    '1Tesalonicenses',
-    '2Tesalonicenses',
-    '1Timoteo',
-    '2Timoteo',
-    'Tito',
-    'Filemón',
-    'Hebreos',
-    'Santiago',
-    '1Pedro',
-    '2Pedro',
-    '1Juan',
-    '2Juan',
-    '3Juan',
-    'Judas',
-    'Apocalipsis'
-  ];
+  static List<String> generateNoSpaceBookNames() {
+    List<String> tempNames = [];
+    for (int i = 0; i < fullBookNames.length; i++) {
+      tempNames.add(fullBookNames[i].replaceAll(' ', ''));
+    }
+    return tempNames;
+  }
+
+  static final shortBookNames = generateNoSpaceBookNames();
 
   static const fullBookNames = [
     'Génesis',
