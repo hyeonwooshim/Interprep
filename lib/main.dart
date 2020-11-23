@@ -169,6 +169,7 @@ class _CardInterfaceState extends State<CardInterface> {
     });
 
     listenToSelectAllOnFocus(_bookNameFocusNode, _bookNameEditController);
+
     _smartFocusNode.addListener(() {
       if (!_smartFocusNode.hasFocus) return;
       final editController = _smartEditController;
@@ -648,6 +649,7 @@ class _CardInterfaceState extends State<CardInterface> {
       ),
       keyboardType: TextInputType.number,
       autovalidateMode: AutovalidateMode.always,
+      textInputAction: TextInputAction.done,
       onChanged: (text) {
         setState(() {
           final parsed = parsePassageInput(text);
