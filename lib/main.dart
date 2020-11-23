@@ -169,6 +169,36 @@ class _CardInterfaceState extends State<CardInterface> {
     });
 
     listenToSelectAllOnFocus(_bookNameFocusNode, _bookNameEditController);
+    _smartFocusNode.addListener(() {
+      if (!_smartFocusNode.hasFocus) return;
+      final editController = _smartEditController;
+      final parsed = parsePassageInput(editController.text);
+      if (parsed['locations'].isEmpty) return;
+
+      final selectedPos = editController.selection.baseOffset;
+      int baseOffset = 0;
+      int extentOffset = 0;
+      for (Map<String, int> loc in parsed['locations']) {
+        baseOffset = loc['chPos'];
+        extentOffset = loc['chPos'] + loc['chLen'];
+        if (selectedPos == -1) break;
+        if (baseOffset <= selectedPos && selectedPos <= extentOffset) break;
+
+        baseOffset = loc['v1Pos'];
+        extentOffset = loc['v1Pos'] + loc['v1Len'];
+        if (baseOffset <= selectedPos && selectedPos <= extentOffset) break;
+
+        if (loc['v2Pos'] == null) continue;
+        baseOffset = loc['v2Pos'];
+        extentOffset = loc['v2Pos'] + loc['v2Len'];
+        if (baseOffset <= selectedPos && selectedPos <= extentOffset) break;
+      }
+
+      editController.selection = TextSelection(
+        baseOffset: baseOffset,
+        extentOffset: extentOffset,
+      );
+    });
   }
 
   void listenToSelectAllOnFocus(
@@ -726,8 +756,10 @@ class _CardInterfaceState extends State<CardInterface> {
     _keyboardListenerFocusNode.dispose();
 
     _bookNameFocusNode.dispose();
+    _smartFocusNode.dispose();
 
     _bookNameEditController.dispose();
+    _smartEditController.dispose();
 
     super.dispose();
   }
