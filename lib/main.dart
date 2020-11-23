@@ -635,7 +635,7 @@ class _CardInterfaceState extends State<CardInterface> {
         if (result['problemStart'] == null) return null;
         final start = result['problemStart'];
         final substr = value.substring(start, start + result['problemLength']);
-        return 'Problem at $start with \'$substr\'';
+        return 'Problem at position $start with \'$substr\'';
       },
     );
   }
@@ -672,6 +672,8 @@ class _CardInterfaceState extends State<CardInterface> {
       if (chapter == null)
         return problemResult(pos, chapterVerseSplit[0].length);
 
+      final chPos = pos;
+
       pos += chapterVerseSplit[0].length + 1;
 
       if (chapterVerseSplit[1].isEmpty) return problemResult(pos, 0);
@@ -691,14 +693,23 @@ class _CardInterfaceState extends State<CardInterface> {
         final v1 = int.tryParse(v1Str);
         if (v1 == null) return problemResult(pos, v1Str.length);
 
+        final verseRef = {
+          'ch': chapter,
+          'chPos': chPos,
+          'chLen': chapterVerseSplit[0].length,
+          'v1': v1,
+          'v1Pos': pos,
+          'v1Len': v1Str.length
+        };
         pos += v1Str.length + 1;
 
-        final verseRef = {'ch': chapter, 'v1': v1};
         final v2Str = verseNumMatches.elementAt(0)?.group(2);
         if (v2Str != null) {
           final v2 = int.tryParse(v2Str);
           if (v2 == null) return problemResult(pos, v2Str.length);
           verseRef['v2'] = v2;
+          verseRef['v2Pos'] = pos;
+          verseRef['v2Len'] = v2Str.length;
 
           pos += v2Str.length + 1;
         }
