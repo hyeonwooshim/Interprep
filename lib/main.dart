@@ -613,7 +613,7 @@ class _CardInterfaceState extends State<CardInterface> {
       focusNode: _smartFocusNode,
       controller: _smartEditController,
       decoration: InputDecoration(
-        labelText: 'Smart',
+        labelText: 'Chapter:Start#-End#',
         isDense: false,
       ),
       keyboardType: TextInputType.number,
