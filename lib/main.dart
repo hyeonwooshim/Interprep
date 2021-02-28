@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:interprep/services/bible/passage.dart';
 import 'package:interprep/services/bible/verse.dart';
 import 'package:interprep/services/bible_source.dart';
@@ -131,14 +130,14 @@ class _CardInterfaceState extends State<CardInterface> {
   Function _keyboardFocusChangedListener;
 
   FocusNode _bookNameFocusNode;
-  FocusNode _chapterFocusNode;
-  FocusNode _startVerseFocusNode;
-  FocusNode _endVerseFocusNode;
+  FocusNode _smartFocusNode;
 
   TextEditingController _bookNameEditController;
-  TextEditingController _chapterEditController;
-  TextEditingController _startVerseEditController;
-  TextEditingController _endVerseEditController;
+  TextEditingController _smartEditController;
+
+  Map<String, dynamic> smartInputCache = {'input': null, 'result': null};
+
+  final _formKey = GlobalKey<FormState>();
 
   void initState() {
     super.initState();
@@ -160,23 +159,47 @@ class _CardInterfaceState extends State<CardInterface> {
     _keyboardListenerFocusNode.addListener(_keyboardFocusChangedListener);
 
     _bookNameFocusNode = FocusNode();
-    _chapterFocusNode = FocusNode();
-    _startVerseFocusNode = FocusNode();
-    _endVerseFocusNode = FocusNode();
+    _smartFocusNode = FocusNode();
 
     _bookNameEditController = TextEditingController();
-    _chapterEditController = TextEditingController();
-    _startVerseEditController = TextEditingController();
-    _endVerseEditController = TextEditingController();
+    _smartEditController = TextEditingController();
 
     _bookNameEditController.addListener(() {
       setState(() => _currentBook = _bookNameEditController.text);
     });
 
     listenToSelectAllOnFocus(_bookNameFocusNode, _bookNameEditController);
-    listenToSelectAllOnFocus(_chapterFocusNode, _chapterEditController);
-    listenToSelectAllOnFocus(_startVerseFocusNode, _startVerseEditController);
-    listenToSelectAllOnFocus(_endVerseFocusNode, _endVerseEditController);
+
+    _smartFocusNode.addListener(() {
+      if (!_smartFocusNode.hasFocus) return;
+      final editController = _smartEditController;
+      final parsed = parsePassageInput(editController.text);
+      if (parsed['locations'].isEmpty) return;
+
+      final selectedPos = editController.selection.baseOffset;
+      int baseOffset = 0;
+      int extentOffset = 0;
+      for (Map<String, int> loc in parsed['locations']) {
+        baseOffset = loc['chPos'];
+        extentOffset = loc['chPos'] + loc['chLen'];
+        if (selectedPos == -1) break;
+        if (baseOffset <= selectedPos && selectedPos <= extentOffset) break;
+
+        baseOffset = loc['v1Pos'];
+        extentOffset = loc['v1Pos'] + loc['v1Len'];
+        if (baseOffset <= selectedPos && selectedPos <= extentOffset) break;
+
+        if (loc['v2Pos'] == null) continue;
+        baseOffset = loc['v2Pos'];
+        extentOffset = loc['v2Pos'] + loc['v2Len'];
+        if (baseOffset <= selectedPos && selectedPos <= extentOffset) break;
+      }
+
+      editController.selection = TextSelection(
+        baseOffset: baseOffset,
+        extentOffset: extentOffset,
+      );
+    });
   }
 
   void listenToSelectAllOnFocus(
@@ -383,75 +406,61 @@ class _CardInterfaceState extends State<CardInterface> {
   }
 
   Widget inputCardContent() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        languageSetting(),
-        SizedBox(
-          height: 30,
-        ),
-        recitedOrReadSetting(),
-        beforeOrAfterSetting(),
-        showVerseNumbersSetting(),
-        // Book name
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: bookNameField(),
-        ),
-        // Verse location input
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Flexible(
-                child: chapterTextField(),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: Text(
-                  ':',
-                  style: TextStyle(fontSize: 15),
-                ),
-              ),
-              Flexible(
-                child: startVerseTextField(),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: Text(
-                  '~',
-                  style: TextStyle(fontSize: 15),
-                ),
-              ),
-              Flexible(
-                child: endVerseTextField(),
-              ),
-            ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          languageSetting(),
+          SizedBox(
+            height: 30,
           ),
-        ),
-        //  Submit button
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FlatButton(
-              child: Text(
-                'Copy Verse',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+          recitedOrReadSetting(),
+          beforeOrAfterSetting(),
+          showVerseNumbersSetting(),
+          // Book name
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: previewBookNameField(),
+          ),
+          // Verse location input
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Flexible(
+                  child: smartTextField(),
                 ),
-              ),
-              color: Colors.blue,
-              textColor: Colors.white,
-              disabledColor: Colors.black12,
-              onPressed: copyButtonOnPressed(),
+              ],
             ),
-          ],
-        ),
-      ],
+          ),
+          //  Submit button
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FlatButton(
+                  child: Text(
+                    'Copy Verse',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  disabledColor: Colors.black12,
+                  onPressed: copyButtonOnPressed(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -610,133 +619,137 @@ class _CardInterfaceState extends State<CardInterface> {
     );
   }
 
-  Widget bookNameField() {
-    final useSuggestions = false;
-    if (useSuggestions) {
-      return autocompleteBookNameField();
-    } else {
-      return previewBookNameField();
-    }
-  }
-
   Widget previewBookNameField() {
     final matchedName = searchBookMatch();
     final displayText = matchedName ?? 'Book Name';
-    return TextField(
+    return TextFormField(
       focusNode: _bookNameFocusNode,
       controller: _bookNameEditController,
       decoration: InputDecoration(
-        border: OutlineInputBorder(),
         labelText: displayText,
         isDense: true,
       ),
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please enter some text';
+        }
+        return null;
+      },
+      autovalidateMode: AutovalidateMode.onUserInteraction,
     );
   }
 
-  Widget autocompleteBookNameField() {
-    return TypeAheadField<String>(
-      textFieldConfiguration: TextFieldConfiguration(
-        focusNode: _bookNameFocusNode,
-        controller: _bookNameEditController,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Book Name',
-          isDense: true,
-        ),
-      ),
-      suggestionsCallback: (pattern) async {
-        final whitespace = new RegExp(r"\s+\b|\b\s|\s|\b");
-        pattern = pattern.replaceAll(whitespace, "");
-        if (pattern.isEmpty) return [];
-
-        final candidates = suggestions.where((b) {
-          b = b.replaceAll(whitespace, "");
-          return b.toLowerCase().startsWith(pattern.toLowerCase());
-        });
-        if (candidates.isNotEmpty) return candidates;
-        return suggestions.where((b) {
-          b = b.replaceAll(whitespace, "");
-          return b.toLowerCase().contains(pattern.toLowerCase());
-        });
-      },
-      itemBuilder: (context, suggestion) {
-        return Listener(
-          child: ListTile(title: Text(suggestion)),
-          onPointerUp: (_) {
-            _bookNameEditController.text = suggestion;
-          },
-        );
-      },
-      onSuggestionSelected: (_) {},
-      hideOnEmpty: true,
-      hideOnError: true,
-      hideOnLoading: true,
-      // Disables animation.
-      transitionBuilder: (_, suggestionsBox, __) => suggestionsBox,
-    );
-  }
-
-  Widget chapterTextField() {
-    return TextField(
-      focusNode: _chapterFocusNode,
-      controller: _chapterEditController,
+  Widget smartTextField() {
+    return TextFormField(
+      focusNode: _smartFocusNode,
+      controller: _smartEditController,
       decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Chapter',
-        isDense: true,
+        labelText: 'Chapter:Start#-End#',
+        isDense: false,
       ),
       keyboardType: TextInputType.number,
-      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+      autovalidateMode: AutovalidateMode.always,
+      textInputAction: TextInputAction.done,
       onChanged: (text) {
         setState(() {
-          if (text != null) {
-            _currentChapter = int.tryParse(text);
-          }
+          final parsed = parsePassageInput(text);
+          if (parsed['locations'].isEmpty) return;
+          final loc = parsed['locations'][0];
+          final valid = parsed['problemStart'] == null;
+          _currentChapter = valid ? loc['ch'] : null;
+          _currentStartVerse = valid ? loc['v1'] : null;
+          _currentEndVerse = valid ? loc['v2'] ?? loc['v1'] : null;
         });
+      },
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9,:;-]'))],
+      validator: (value) {
+        final result = parsePassageInput(value);
+        if (result['problemStart'] == null) return null;
+        final start = result['problemStart'];
+        final substr = value.substring(start, start + result['problemLength']);
+        return 'Problem at position $start with \'$substr\'';
       },
     );
   }
 
-  Widget startVerseTextField() {
-    return TextField(
-      focusNode: _startVerseFocusNode,
-      controller: _startVerseEditController,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Start Verse',
-        isDense: true,
-      ),
-      keyboardType: TextInputType.number,
-      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-      onChanged: (text) {
-        setState(() {
-          if (text != null) {
-            _currentStartVerse = int.tryParse(text);
-          }
-        });
-      },
-    );
-  }
+  Map<String, dynamic> parsePassageInput(input) {
+    final result = {'locations': []};
+    if (input.isEmpty) return result;
 
-  Widget endVerseTextField() {
-    return TextField(
-      focusNode: _endVerseFocusNode,
-      controller: _endVerseEditController,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'End Verse',
-        isDense: true,
-      ),
-      keyboardType: TextInputType.number,
-      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-      onChanged: (text) {
-        setState(() {
-          if (text != null) {
-            _currentEndVerse = int.tryParse(text);
-          }
-        });
-      },
-    );
+    if (smartInputCache['input'] == input) return smartInputCache['result'];
+
+    int pos = 0;
+    final problemResult = (start, length) {
+      final res = {
+        'problemStart': start,
+        'problemLength': length,
+        'locations': result['locations'],
+      };
+      smartInputCache['input'] = input;
+      smartInputCache['result'] = res;
+      return res;
+    };
+
+    final locs = input.split(';');
+    if (locs.isEmpty) return problemResult(pos, input.length);
+
+    // TODO(ericshim): remove this logic to enable referencing multiple verses
+    if (locs.length != 1) return problemResult(pos, input.length);
+
+    for (String loc in locs) {
+      final chapterVerseSplit = loc.split(':');
+      if (chapterVerseSplit.length != 2) return problemResult(pos, loc.length);
+
+      final chapter = int.tryParse(chapterVerseSplit[0]);
+      if (chapter == null)
+        return problemResult(pos, chapterVerseSplit[0].length);
+
+      final chPos = pos;
+
+      pos += chapterVerseSplit[0].length + 1;
+
+      if (chapterVerseSplit[1].isEmpty) return problemResult(pos, 0);
+
+      final verseLocs = chapterVerseSplit[1].split(',');
+      if (verseLocs.isEmpty)
+        return problemResult(pos, chapterVerseSplit[1].length);
+
+      for (String verseLoc in verseLocs) {
+        if (verseLoc.isEmpty) return problemResult(pos, 0);
+
+        final verseNumMatches =
+            RegExp('^([0-9]+)(?:-([0-9]+))?\$').allMatches(verseLoc);
+        if (verseNumMatches.isEmpty) return problemResult(pos, verseLoc.length);
+
+        final v1Str = verseNumMatches.elementAt(0).group(1);
+        final v1 = int.tryParse(v1Str);
+        if (v1 == null) return problemResult(pos, v1Str.length);
+
+        final verseRef = {
+          'ch': chapter,
+          'chPos': chPos,
+          'chLen': chapterVerseSplit[0].length,
+          'v1': v1,
+          'v1Pos': pos,
+          'v1Len': v1Str.length
+        };
+        pos += v1Str.length + 1;
+
+        final v2Str = verseNumMatches.elementAt(0)?.group(2);
+        if (v2Str != null) {
+          final v2 = int.tryParse(v2Str);
+          if (v2 == null) return problemResult(pos, v2Str.length);
+          verseRef['v2'] = v2;
+          verseRef['v2Pos'] = pos;
+          verseRef['v2Len'] = v2Str.length;
+
+          pos += v2Str.length + 1;
+        }
+        result['locations'].add(verseRef);
+      }
+    }
+
+    return result;
   }
 
   @override
@@ -745,14 +758,10 @@ class _CardInterfaceState extends State<CardInterface> {
     _keyboardListenerFocusNode.dispose();
 
     _bookNameFocusNode.dispose();
-    _chapterFocusNode.dispose();
-    _startVerseFocusNode.dispose();
-    _endVerseFocusNode.dispose();
+    _smartFocusNode.dispose();
 
     _bookNameEditController.dispose();
-    _chapterEditController.dispose();
-    _startVerseEditController.dispose();
-    _endVerseEditController.dispose();
+    _smartEditController.dispose();
 
     super.dispose();
   }
