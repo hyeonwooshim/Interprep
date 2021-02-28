@@ -130,12 +130,16 @@ class _CardInterfaceState extends State<CardInterface> {
   Function _keyboardFocusChangedListener;
 
   FocusNode _bookNameFocusNode;
-  FocusNode _smartFocusNode;
+  FocusNode _smartInputFocusNode;
+  FocusNode _editActionDetectorFocusNode;
 
   TextEditingController _bookNameEditController;
   TextEditingController _smartEditController;
 
   Map<String, dynamic> smartInputCache = {'input': null, 'result': null};
+
+  Map<LogicalKeySet, Intent> _shortcutMap;
+  Map<Type, Action<Intent>> _actionMap;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -158,9 +162,6 @@ class _CardInterfaceState extends State<CardInterface> {
     };
     _keyboardListenerFocusNode.addListener(_keyboardFocusChangedListener);
 
-    _bookNameFocusNode = FocusNode();
-    _smartFocusNode = FocusNode();
-
     _bookNameEditController = TextEditingController();
     _smartEditController = TextEditingController();
 
@@ -168,10 +169,12 @@ class _CardInterfaceState extends State<CardInterface> {
       setState(() => _currentBook = _bookNameEditController.text);
     });
 
+    _bookNameFocusNode = FocusNode();
     listenToSelectAllOnFocus(_bookNameFocusNode, _bookNameEditController);
 
-    _smartFocusNode.addListener(() {
-      if (!_smartFocusNode.hasFocus) return;
+    _smartInputFocusNode = FocusNode();
+    _smartInputFocusNode.addListener(() {
+      if (!_smartInputFocusNode.hasFocus) return;
       final editController = _smartEditController;
       final parsed = parsePassageInput(editController.text);
       if (parsed['locations'].isEmpty) return;
@@ -200,6 +203,22 @@ class _CardInterfaceState extends State<CardInterface> {
         extentOffset: extentOffset,
       );
     });
+
+    _editActionDetectorFocusNode = FocusNode();
+    _editActionDetectorFocusNode.addListener(() {
+      if (!_editActionDetectorFocusNode.hasFocus) return;
+      _smartInputFocusNode.requestFocus();
+    });
+
+    _actionMap = <Type, Action<Intent>>{
+      _LocationEditIntent: CallbackAction<_LocationEditIntent>(
+        onInvoke: (_LocationEditIntent intent) =>
+            _handleLocationEditAction(intent),
+      ),
+    };
+    _shortcutMap = <LogicalKeySet, Intent>{
+      LogicalKeySet(LogicalKeyboardKey.tab): const _LocationEditIntent.tab(),
+    };
   }
 
   void listenToSelectAllOnFocus(
@@ -207,12 +226,11 @@ class _CardInterfaceState extends State<CardInterface> {
     TextEditingController textController,
   ) {
     focusNode.addListener(() {
-      if (focusNode.hasFocus) {
-        textController.selection = TextSelection(
-          baseOffset: 0,
-          extentOffset: textController.text.length,
-        );
-      }
+      if (!focusNode.hasFocus) return;
+      textController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: textController.text.length,
+      );
     });
   }
 
@@ -226,7 +244,7 @@ class _CardInterfaceState extends State<CardInterface> {
       Clipboard.setData(ClipboardData(text: str));
     }
 
-    Scaffold.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Passage copied!'),
       duration: Duration(seconds: 1),
     ));
@@ -432,7 +450,7 @@ class _CardInterfaceState extends State<CardInterface> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Flexible(
-                  child: smartTextField(),
+                  child: smartTextFieldActionDetector(),
                 ),
               ],
             ),
@@ -639,9 +657,18 @@ class _CardInterfaceState extends State<CardInterface> {
     );
   }
 
+  Widget smartTextFieldActionDetector() {
+    return FocusableActionDetector(
+      focusNode: _editActionDetectorFocusNode,
+      actions: _actionMap,
+      shortcuts: _shortcutMap,
+      child: smartTextField(),
+    );
+  }
+
   Widget smartTextField() {
     return TextFormField(
-      focusNode: _smartFocusNode,
+      focusNode: _smartInputFocusNode,
       controller: _smartEditController,
       decoration: InputDecoration(
         labelText: 'Chapter:Start#-End#',
@@ -752,17 +779,71 @@ class _CardInterfaceState extends State<CardInterface> {
     return result;
   }
 
+  void _handleLocationEditAction(_LocationEditIntent intent) {
+    switch (intent.type) {
+      case _LocationEditIntentType.TAB:
+        var selectedPos = _smartEditController.selection.baseOffset;
+        print(_smartEditController.selection);
+        if (selectedPos == -1) selectedPos = 0;
+
+        final text = _smartEditController.text;
+        final delimRegExp = RegExp('[,:;-]');
+
+        var baseOffset = -1;
+        var extentOffset = -1;
+        var found = false;
+        for (var i = selectedPos; i < text.length; i++) {
+          if (delimRegExp.hasMatch(text[i])) {
+            if (found) {
+              break;
+            } else {
+              found = true;
+              baseOffset = i + 1;
+              extentOffset = baseOffset;
+            }
+          } else {
+            if (found) {
+              extentOffset += 1;
+            }
+          }
+        }
+
+        if (baseOffset == -1) {
+          _smartInputFocusNode.nextFocus();
+          return;
+        }
+
+        _smartEditController.selection = TextSelection(
+          baseOffset: baseOffset,
+          extentOffset: extentOffset,
+        );
+        break;
+    }
+  }
+
   @override
   void dispose() {
     _keyboardListenerFocusNode.removeListener(_keyboardFocusChangedListener);
     _keyboardListenerFocusNode.dispose();
 
     _bookNameFocusNode.dispose();
-    _smartFocusNode.dispose();
+    _smartInputFocusNode.dispose();
 
     _bookNameEditController.dispose();
     _smartEditController.dispose();
 
     super.dispose();
   }
+}
+
+class _LocationEditIntent extends Intent {
+  final _LocationEditIntentType type;
+
+  const _LocationEditIntent({@required this.type});
+
+  const _LocationEditIntent.tab() : type = _LocationEditIntentType.TAB;
+}
+
+enum _LocationEditIntentType {
+  TAB,
 }
