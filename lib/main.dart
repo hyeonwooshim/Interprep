@@ -674,7 +674,7 @@ class _CardInterfaceState extends State<CardInterface> {
         labelText: 'Chapter:Start#-End#',
         isDense: false,
       ),
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.text,
       autovalidateMode: AutovalidateMode.always,
       textInputAction: TextInputAction.done,
       onChanged: (text) {
